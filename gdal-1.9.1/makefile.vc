@@ -64,8 +64,11 @@ default:	port_dir ogr_dir core_dir frmts_dir $(VB6_TARGET) $(GDAL_DLL) \
 		plugin_dir apps_dir 
 
 staticlib:
-	if exist gdal.lib del gdal.lib
-	lib /nologo /out:gdal.lib $(LIBOBJ)
+#	lib always creates a new lib. using a copy_if_differ script gdal.lib is only rewritten if something as changed
+#
+#	if exist gdal.lib del gdal.lib
+	lib /nologo /out:gdal_build.lib $(LIBOBJ)
+	copy_if_differ.bat gdal_build.lib gdal.lib
 
 target-lib: port_dir ogr_dir core_dir frmts_dir dll
 

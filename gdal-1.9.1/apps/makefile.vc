@@ -3,11 +3,34 @@ GDAL_ROOT	=	..
 
 XTRAOBJ =	$(SETARGV)
 
-LIBS	=	$(GDAL_ROOT)\gdal_i.lib
+#LIBS	=	$(GDAL_ROOT)\gdal_i.lib
 
 XTRAFLAGS =	-I..\frmts -I..\alg -I..\ogr -I..\ogr\ogrsf_frmts
 
 !INCLUDE ..\nmake.opt
+
+# wk 2011-11-20:
+# using MSVC 10, the export of symbols for CPLString also yields the export of symbols for CPLString's base class std::string, because std::string is a typedef for std::basic_string,
+# which is a template class. MSVC 10 exports symbols ('implicitly') also for base-class-templates that are not marked with __declspec(dllexport) - as is the case for std::basic_string!
+# Symbols for std::string exported from gdal18.dll result in multiply defined symbols when linking applications that both
+# - instantiate std::basic_string<char> themselves
+# - and link to gdal_i.lib ( or only, if statically linking to another lib that instantiates a std::string somewhere?)
+# Anyway, CPLString is only needed internally (in gdal18.dll) and by the GDAL/OGR utility programs built by ./apps/makefile.vc
+# Forcing the build of applications that link gdal_i.lib despite multiply defined symbols by usage of /force:mulitple may be dangerous, so we re-configure gdal to not export symbols for CPLString.
+# However, the utility programs then lack the symbols for CPLString, why we link them statically against gdal.lib
+# This introduces another problem: the scop pak lib exports its own symbols for certain (X)TIF functions, why we must specify /force:multiple when linking the utilities.
+# Furthermore, when linking the utilities, we must tell the linker to inspect the libs that are external to gdal: $(EXTERNAL_LIBS)
+# In short: 
+# - do not export the symbols for CPLString by commenting out /*CPL_DLL*/ in ./port/cpl_string.h, and
+# - link the OGR utils to the static lib gdal.lib by
+#     + commenting out #DLLBUILD=1 in ./nmake.opt,
+#     + using $(GDALLIB) instead of $(GDAL_ROOT)\gdal_i.lib in ./apps/makefile.vc
+#     + re-defining LINKER_FLAGS = $(LINKER_FLAGS) /force:multiple $(EXTERNAL_LIBS) in ./apps/makefile.vc
+# The cleanest solution would probably be the replacement of the derivation of CPLString from std::string by a pimpl-pointer to a std::string.
+# However, all string-member-functions have to be forwarded then, and the static member variable std::string::npos must forward from gdal18.dll to crt.dll (?)
+LIBS	=	$(GDALLIB)
+
+LINKER_FLAGS = $(LINKER_FLAGS) /force:multiple $(EXTERNAL_LIBS)
 
 !IFDEF INCLUDE_OGR_FRMTS
 OGR_PROGRAMS =	gdal_contour.exe gdaltindex.exe gdal_rasterize.exe \

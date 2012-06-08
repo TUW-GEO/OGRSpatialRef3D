@@ -8,6 +8,8 @@
 MAKE = nmake
 RM = -del
 
+PROJ_ROOT = .
+
 default:    
 	cd src
 	$(MAKE) /f makefile.vc

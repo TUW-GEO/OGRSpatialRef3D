@@ -81,6 +81,7 @@
 #endif
 
 #include "cpl_config.h"
+#include "gdal_autolink.h"
 
 /* ==================================================================== */
 /*      This will disable most WIN32 stuff in a Cygnus build which      */
