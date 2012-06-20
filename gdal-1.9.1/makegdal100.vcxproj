@@ -1404,6 +1404,7 @@ cd $(ProjectDir) &amp;&amp; nmake -f makefile.vc clean</NMakeCleanCommandLine>
     <ClCompile Include="gcore\gdal_rpcimdio.cpp" />
     <ClCompile Include="gcore\overview.cpp" />
     <ClCompile Include="gcore\rasterio.cpp" />
+    <ClCompile Include="ogr\ct3D.cpp" />
     <ClCompile Include="ogr\ogr_capi_test.c" />
     <ClCompile Include="ogr\gml2ogrgeometry.cpp" />
     <ClCompile Include="ogr\ogr2gmlgeometry.cpp" />

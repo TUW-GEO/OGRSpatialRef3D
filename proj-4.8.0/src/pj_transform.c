@@ -94,6 +94,7 @@ int pj_transform( PJ *srcdefn, PJ *dstdefn, long point_count, int point_offset,
     srcdefn->ctx->last_errno = 0;
     dstdefn->ctx->last_errno = 0;
 
+
     if( point_offset == 0 )
         point_offset = 1;
 

@@ -34,6 +34,10 @@
 #include "cpl_string.h"
 #include "cpl_multiproc.h"
 
+ 
+
+
+
 #ifdef PROJ_STATIC
 #include "proj_api.h"
 #endif
@@ -46,8 +50,8 @@ CPL_CVSID("$Id: ogrct.cpp 20079 2010-07-16 21:28:02Z rouault $");
 #ifndef PROJ_STATIC
 typedef struct { double u, v; } projUV;
 
-#define projPJ void *
-#define projCtx void *
+//#define projPJ void *
+//#define projCtx void *
 #define RAD_TO_DEG      57.29577951308232
 #define DEG_TO_RAD      .0174532925199432958
 
@@ -382,7 +386,7 @@ OGRCreateCoordinateTransformation( OGRSpatialReference *poSource,
 
 {
     OGRProj4CT  *poCT;
-
+	
     if( pfn_pj_init == NULL && !LoadProjLibrary() )
     {
         CPLError( CE_Failure, CPLE_NotSupported, 
@@ -901,6 +905,8 @@ int OGRProj4CT::TransformEx( int nCount, double *x, double *y, double *z,
     else
     {
         err = pfn_pj_transform( psPJSource, psPJTarget, nCount, 1, x, y, z );
+
+		
     }
 
 /* -------------------------------------------------------------------- */

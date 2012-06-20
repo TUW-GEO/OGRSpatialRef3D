@@ -7665,5 +7665,8 @@
     <ClCompile Include="port\xmlreformat.cpp">
       <Filter>Source Files\port</Filter>
     </ClCompile>
+    <ClCompile Include="ogr\ct3D.cpp">
+      <Filter>Source Files\ogr</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

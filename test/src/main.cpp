@@ -11,14 +11,20 @@ int main()
   OGRSpatialReference oSourceSRS, oTargetSRS;
   OGRCoordinateTransformation *poCT;
             
+
+
   oSourceSRS.importFromEPSG( 31491 );
   oTargetSRS.importFromEPSG( 31492 );
 
   double sourcex = 0;
   double sourcey = 0;
+
+  poCT=creat();
             
   poCT = OGRCreateCoordinateTransformation( &oSourceSRS,
                                             &oTargetSRS );
+
+
 
   double targetx = sourcex;
   double targety = sourcey;
