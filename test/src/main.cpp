@@ -9,7 +9,7 @@ int main()
   CPLSetConfigOption("GDAL_DATA", "..\\gdal-1.9.1\\distro\\data");
 
   OGRSpatialReference oSourceSRS, oTargetSRS;
-  OGRCoordinateTransformation *poCT;
+  OGRCoordinateTransformation *poCT,*poCT1;
             
 
 
@@ -19,7 +19,8 @@ int main()
   double sourcex = 0;
   double sourcey = 0;
 
-  poCT=creat();
+  poCT1=OGRCreateCoordinateTransformation3D( &oSourceSRS,
+                                            &oTargetSRS );
             
   poCT = OGRCreateCoordinateTransformation( &oSourceSRS,
                                             &oTargetSRS );
@@ -29,11 +30,17 @@ int main()
   double targetx = sourcex;
   double targety = sourcey;
             
-  if( poCT == NULL || !poCT->Transform( 1, &targetx, &targety ) )
+
+ 
+ /* if( poCT == NULL || !poCT->Transform( 1, &targetx, &targety ) )
+      printf( "Transformation failed.\n" );
+  else
+      printf( "(%f,%f) -> (%f,%f)\n", sourcex, sourcey, targetx, targety );*/
+
+   if( poCT1 == NULL || !poCT1->Transform( 1, &targetx, &targety ) )
       printf( "Transformation failed.\n" );
   else
       printf( "(%f,%f) -> (%f,%f)\n", sourcex, sourcey, targetx, targety );
-
 	std::cout << std::endl << "Press <Enter> to end program" << std::endl;
   std::cin.get();
 }

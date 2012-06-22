@@ -50,8 +50,8 @@ CPL_CVSID("$Id: ogrct.cpp 20079 2010-07-16 21:28:02Z rouault $");
 #ifndef PROJ_STATIC
 typedef struct { double u, v; } projUV;
 
-//#define projPJ void *
-//#define projCtx void *
+#define projPJ void *
+#define projCtx void *
 #define RAD_TO_DEG      57.29577951308232
 #define DEG_TO_RAD      .0174532925199432958
 
