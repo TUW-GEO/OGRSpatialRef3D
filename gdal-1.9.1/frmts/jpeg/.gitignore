@@ -1,0 +1,4 @@
+#gdal copies frmts/jepg/libjpeg frmts/jepg/libjpeg12 
+libjpeg12/*
+!libjpeg12/jmorecfg.h.12
+!libjpeg12/makefile.vc

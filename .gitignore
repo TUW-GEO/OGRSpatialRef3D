@@ -4,8 +4,6 @@
 *.exp
 *.lib
 distro
-#gdal copies frmts/jepg/libjpeg frmts/jepg/libjpeg12 
-libjpeg12
 #gdal copies cpl_config.h.vc to cpl_config.h
 cpl_config.h
 Version.res
