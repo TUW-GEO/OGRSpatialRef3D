@@ -56,7 +56,7 @@ local.properties
 **/[Dd]ebug/
 **/[Rr]elease/
 *_i.c
-*_p.c
+#*_p.c
 *.ilk
 *.meta
 *.obj
