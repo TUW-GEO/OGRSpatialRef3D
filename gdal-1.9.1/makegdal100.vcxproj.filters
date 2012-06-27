@@ -3907,6 +3907,12 @@
     <ClInclude Include="gcore\gdal_autolink.h">
       <Filter>Include Files\gcore</Filter>
     </ClInclude>
+    <ClInclude Include="ogr\ogr_spatialref3D.h">
+      <Filter>Include Files\ogr</Filter>
+    </ClInclude>
+    <ClInclude Include="ogr\ogrspatialreference3D.h">
+      <Filter>Source Files\ogr</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="alg\gdalwarpkernel_opencl.c">
@@ -7666,6 +7672,9 @@
       <Filter>Source Files\port</Filter>
     </ClCompile>
     <ClCompile Include="ogr\ct3D.cpp">
+      <Filter>Source Files\ogr</Filter>
+    </ClCompile>
+    <ClCompile Include="ogr\ogrspatialreference3D.cpp">
       <Filter>Source Files\ogr</Filter>
     </ClCompile>
   </ItemGroup>

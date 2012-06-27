@@ -1,6 +1,6 @@
 #include <iostream>
 
-#include "ogr_spatialref.h"
+#include "ogr_spatialref3D.h"
 #include "cpl_port.h"
 #include "cpl_error.h"
 #include "cpl_conv.h"
@@ -43,10 +43,10 @@ static const int transient_error[50] = {
 #define Rz_BF (defn->datum_params[5])
 #define M_BF  (defn->datum_params[6])
 
-class OGRProj4CT3D : public OGRCoordinateTransformation
+class OGRProj4CT3D : public OGRCoordinateTransformation3D
 {
 	
-	OGRSpatialReference *poSRSSource;
+	OGRSpatialReference3D *poSRSSource;
 	projPJ        psPJSource;
     int         bSourceLatLong;
     double      dfSourceToRadians;
@@ -54,7 +54,7 @@ class OGRProj4CT3D : public OGRCoordinateTransformation
     int         bSourceWrap;
     double      dfSourceWrapLong;
 
-	OGRSpatialReference *poSRSTarget;
+	OGRSpatialReference3D *poSRSTarget;
     projPJ        psPJTarget;
     int         bTargetLatLong;
     double      dfTargetToRadians;
@@ -69,8 +69,8 @@ class OGRProj4CT3D : public OGRCoordinateTransformation
     
     projCtx     pjctx;
 
-	int         InitializeNoLock( OGRSpatialReference *poSource, 
-                                  OGRSpatialReference *poTarget );
+	int         InitializeNoLock( OGRSpatialReference3D *poSource, 
+                                  OGRSpatialReference3D *poTarget );
   
     int         nMaxCount;
     double     *padfOriX;
@@ -81,10 +81,10 @@ class OGRProj4CT3D : public OGRCoordinateTransformation
     double     *padfTargetZ;
 public:
 	OGRProj4CT3D();
-	virtual OGRSpatialReference *GetSourceCS();
-    virtual OGRSpatialReference *GetTargetCS();
-	int         Initialize( OGRSpatialReference *poSource, 
-                            OGRSpatialReference *poTarget );
+	virtual OGRSpatialReference3D *GetSourceCS();
+    virtual OGRSpatialReference3D *GetTargetCS();
+	int         Initialize( OGRSpatialReference3D *poSource, 
+                            OGRSpatialReference3D *poTarget );
 
 	int ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, int point_offset,
                   double *x, double *y, double *z);
@@ -105,9 +105,9 @@ OGRCoordinateTransformation* creat()
 	return a;
 }
 
-OGRCoordinateTransformation*  
-OGRCreateCoordinateTransformation3D( OGRSpatialReference *poSource, 
-                                   OGRSpatialReference *poTarget )
+OGRCoordinateTransformation3D*  
+OGRCreateCoordinateTransformation3DNEW( OGRSpatialReference3D *poSource, 
+                                   OGRSpatialReference3D *poTarget )
 {
 	OGRProj4CT3D *a;
 	a=new OGRProj4CT3D();
@@ -145,8 +145,8 @@ OGRProj4CT3D::OGRProj4CT3D()
 	
 }
 
-int OGRProj4CT3D::Initialize(OGRSpatialReference * poSourceIn, 
-                            OGRSpatialReference * poTargetIn )
+int OGRProj4CT3D::Initialize(OGRSpatialReference3D * poSourceIn, 
+                            OGRSpatialReference3D * poTargetIn )
 {
 	if(pjctx!=NULL)
 	{
@@ -157,15 +157,15 @@ int OGRProj4CT3D::Initialize(OGRSpatialReference * poSourceIn,
     return InitializeNoLock(poSourceIn, poTargetIn);
 }
 
-int OGRProj4CT3D::InitializeNoLock( OGRSpatialReference * poSourceIn, 
-                                  OGRSpatialReference * poTargetIn )
+int OGRProj4CT3D::InitializeNoLock( OGRSpatialReference3D * poSourceIn, 
+                                  OGRSpatialReference3D * poTargetIn )
 
 {
 	 if( poSourceIn == NULL || poTargetIn == NULL )
         return FALSE;
 
-    poSRSSource = poSourceIn->Clone();
-    poSRSTarget = poTargetIn->Clone();
+    poSRSSource = (OGRSpatialReference3D*)poSourceIn->Clone();
+    poSRSTarget = (OGRSpatialReference3D*)poTargetIn->Clone();
 
     bSourceLatLong = poSRSSource->IsGeographic();
     bTargetLatLong = poSRSTarget->IsGeographic();
@@ -360,13 +360,13 @@ if( bSourceLatLong )
     return TRUE;
 }
 
-OGRSpatialReference* OGRProj4CT3D::GetSourceCS()
+OGRSpatialReference3D* OGRProj4CT3D::GetSourceCS()
 
 {
     return poSRSSource;
 }
 
-OGRSpatialReference* OGRProj4CT3D::GetTargetCS()
+OGRSpatialReference3D* OGRProj4CT3D::GetTargetCS()
 {
 	return poSRSTarget;
 }
@@ -711,7 +711,7 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
 /*      Do we need to translate from geoid to ellipsoidal vertical      */
 /*      datum?                                                          */
 /* -------------------------------------------------------------------- */
-    if( srcdefn->has_geoid_vgrids )
+    if( srcdefn->has_geoid_vgrids )	
     {
         if( pj_apply_vgridshift( srcdefn, "sgeoidgrids", 
                                  &(srcdefn->vgridlist_geoid), 

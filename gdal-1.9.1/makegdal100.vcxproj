@@ -506,6 +506,7 @@ cd $(ProjectDir) &amp;&amp; nmake -f makefile.vc clean</NMakeCleanCommandLine>
     <ClInclude Include="gcore\gdal_version.h" />
     <ClInclude Include="ogr\ogrgeomediageometry.h" />
     <ClInclude Include="ogr\ogrpgeogeometry.h" />
+    <ClInclude Include="ogr\ogrspatialreference3D.h" />
     <ClInclude Include="ogr\ogr_api.h" />
     <ClInclude Include="ogr\ogr_core.h" />
     <ClInclude Include="ogr\ogr_expat.h" />
@@ -515,6 +516,7 @@ cd $(ProjectDir) &amp;&amp; nmake -f makefile.vc clean</NMakeCleanCommandLine>
     <ClInclude Include="ogr\ogr_geos.h" />
     <ClInclude Include="ogr\ogr_p.h" />
     <ClInclude Include="ogr\ogr_spatialref.h" />
+    <ClInclude Include="ogr\ogr_spatialref3D.h" />
     <ClInclude Include="ogr\ogr_srs_api.h" />
     <ClInclude Include="ogr\ogr_srs_esri_names.h" />
     <ClInclude Include="ogr\swq.h" />
@@ -1405,6 +1407,7 @@ cd $(ProjectDir) &amp;&amp; nmake -f makefile.vc clean</NMakeCleanCommandLine>
     <ClCompile Include="gcore\overview.cpp" />
     <ClCompile Include="gcore\rasterio.cpp" />
     <ClCompile Include="ogr\ct3D.cpp" />
+    <ClCompile Include="ogr\ogrspatialreference3D.cpp" />
     <ClCompile Include="ogr\ogr_capi_test.c" />
     <ClCompile Include="ogr\gml2ogrgeometry.cpp" />
     <ClCompile Include="ogr\ogr2gmlgeometry.cpp" />
