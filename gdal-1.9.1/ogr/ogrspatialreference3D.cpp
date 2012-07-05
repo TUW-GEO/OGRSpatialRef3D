@@ -53,6 +53,12 @@ OGRSpatialReference3D::OGRSpatialReference3D()
 {
 }
 
+OGRSpatialReference3D::~OGRSpatialReference3D()
+{
+}
+
+
+
 OGRSpatialReference3D::OGRSpatialReference3D(const OGRSpatialReference&)
 {
 }
@@ -63,6 +69,29 @@ OGRSpatialReference3D::OGRSpatialReference3D(const char * pszWKT,
                           double dfVOffset,
                           double dfVScale)
 {
+}
+
+OGRErr OGRSpatialReference3D::SetVOffset( double  dfVOffset )
+{
+	dfVOffset_=dfVOffset;
+	return OGRERR_NONE;
+}
+
+double OGRSpatialReference3D::GetVOffset ()
+{
+	return dfVOffset_;
+}
+
+
+OGRErr OGRSpatialReference3D::SetVScale( double  dfVScale )
+{
+	dfVScale_=dfVScale;
+	return OGRERR_NONE;
+}
+
+double OGRSpatialReference3D::GetVScale ()
+{
+	return dfVScale_;
 }
 
 OGRCoordinateTransformation3D::OGRCoordinateTransformation3D()

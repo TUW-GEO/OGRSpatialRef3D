@@ -66,7 +66,7 @@ public:
                           double dfVScale);
 	 virtual    ~OGRSpatialReference3D();
 
-	  OGRErr SetGeoidModel( const char * pszGeoidModel );
+	OGRErr SetGeoidModel( const char * pszGeoidModel );
     const char * GetGeoidModel ();
 
     OGRErr SetVCorrModel( const char * pszVCorrModel );
@@ -86,6 +86,6 @@ public:
 };
 
 OGRCoordinateTransformation3D CPL_DLL *
-OGRCreateCoordinateTransformation3DNEW( OGRSpatialReference3D *poSource, 
+OGRCreateCoordinateTransformation3D( OGRSpatialReference3D *poSource, 
                                    OGRSpatialReference3D *poTarget );
 #endif

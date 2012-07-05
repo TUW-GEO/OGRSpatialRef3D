@@ -606,10 +606,4 @@ OGRCoordinateTransformation CPL_DLL *
 OGRCreateCoordinateTransformation( OGRSpatialReference *poSource, 
                                    OGRSpatialReference *poTarget );
 
-OGRCoordinateTransformation CPL_DLL *
-creat();
-
-OGRCoordinateTransformation CPL_DLL *
-OGRCreateCoordinateTransformation3D( OGRSpatialReference *poSource, 
-                                   OGRSpatialReference *poTarget );
 #endif /* ndef _OGR_SPATIALREF_H_INCLUDED */

@@ -106,7 +106,7 @@ OGRCoordinateTransformation* creat()
 }
 
 OGRCoordinateTransformation3D*  
-OGRCreateCoordinateTransformation3DNEW( OGRSpatialReference3D *poSource, 
+OGRCreateCoordinateTransformation3D( OGRSpatialReference3D *poSource, 
                                    OGRSpatialReference3D *poTarget )
 {
 	OGRProj4CT3D *a;

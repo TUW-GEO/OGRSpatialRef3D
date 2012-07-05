@@ -34,10 +34,6 @@
 #include "cpl_string.h"
 #include "cpl_multiproc.h"
 
- 
-
-
-
 #ifdef PROJ_STATIC
 #include "proj_api.h"
 #endif
@@ -386,7 +382,7 @@ OGRCreateCoordinateTransformation( OGRSpatialReference *poSource,
 
 {
     OGRProj4CT  *poCT;
-	
+
     if( pfn_pj_init == NULL && !LoadProjLibrary() )
     {
         CPLError( CE_Failure, CPLE_NotSupported, 
@@ -905,8 +901,6 @@ int OGRProj4CT::TransformEx( int nCount, double *x, double *y, double *z,
     else
     {
         err = pfn_pj_transform( psPJSource, psPJTarget, nCount, 1, x, y, z );
-
-		
     }
 
 /* -------------------------------------------------------------------- */

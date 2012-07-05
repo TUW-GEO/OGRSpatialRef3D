@@ -506,7 +506,6 @@ cd $(ProjectDir) &amp;&amp; nmake -f makefile.vc clean</NMakeCleanCommandLine>
     <ClInclude Include="gcore\gdal_version.h" />
     <ClInclude Include="ogr\ogrgeomediageometry.h" />
     <ClInclude Include="ogr\ogrpgeogeometry.h" />
-    <ClInclude Include="ogr\ogrspatialreference3D.h" />
     <ClInclude Include="ogr\ogr_api.h" />
     <ClInclude Include="ogr\ogr_core.h" />
     <ClInclude Include="ogr\ogr_expat.h" />
