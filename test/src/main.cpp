@@ -57,4 +57,12 @@ int main()
       printf( "(%f,%f) -> (%f,%f)\n", sourcex, sourcey, targetx, targety );
 	std::cout << std::endl << "Press <Enter> to end program" << std::endl;
   std::cin.get();
+
+  oSourceSRS.SetGeoidModel("F:\\geoid.tif");
+
+  oSourceSRS.SetVCorrModel("F:\\vcorr.tif");
+
+  oSourceSRS.SetVScale(0.15); //setting vertical scale
+  oSourceSRS.SetVOffset(100); //setting vertical offset
+  oSourceSRS.transform();
 }

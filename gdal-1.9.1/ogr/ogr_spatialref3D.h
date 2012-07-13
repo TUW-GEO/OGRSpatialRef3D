@@ -29,7 +29,11 @@
 #ifndef _OGR_SPATIALREF3D_H_INCLUDED
 #define _OGR_SPATIALREF3D_H_INCLUDED
 
+#include "F:\Gsoc\bhargav57-OGRSpatialRef3D-5e424eb\gdal-1.9.1\distro\include\gdal_priv.h"
 #include "ogr_spatialref.h"
+#include "F:\Gsoc\bhargav57-OGRSpatialRef3D-5e424eb\gdal-1.9.1\distro\include\gdalwarper.h"
+#include <vector>
+
 
 /************************************************************************/
 /*                         OGRSpatialReference3D                        */
@@ -50,12 +54,48 @@
  * 
 /************************************************************************/
 
+
+class Point2D
+{
+	double x,y,z;
+public:
+	Point2D()
+	{
+		x=0;
+		y=0;
+		z=0;
+	}
+	void setxy(int x1, int y1)
+	{
+		x=x1;
+		y=y1;
+	}
+	void setz(double z1)
+	{
+		z=z1;
+	}
+	double X()
+	{
+		return x;
+	}
+	double Y()
+	{
+		return y;
+	}
+	double Z()
+	{
+		return z;
+	}
+};
+
 class CPL_DLL OGRSpatialReference3D:public OGRSpatialReference
 {
   const char * pszGeoid_;
   const char * pszVCorrModel_;
   double dfVOffset_;
   double dfVScale_;
+  GDALDataset  *poDataset;
+  GDALDataset  *hDatasetVCorrModel_;
 public:
 	OGRSpatialReference3D();
 	OGRSpatialReference3D(const OGRSpatialReference&);
@@ -77,6 +117,31 @@ public:
 
     OGRErr SetVScale( double  dfVScale );
     double GetVScale ();
+
+	// This interpolatez_generalize function will take multiple point as an argument for a find out interpolation
+	// Also it can find out interolation at multiple band so it can use for R-G-B image 
+	// GDALDataset is pointer of raster, IRC_mask is for masking purpose, Irc_Band are band of raster
+	//Irc_pt are point at where you want to find interpolate value it can be single or group of points
+	//Xrc_z give result of interpolation in a coloumn. Result store in a coloumn if you give 4 point as an input then four column of 
+	//Xrc_z give interpolated value of four point. , Last one is resampling algoritham
+
+
+	void interpolateZ_Generalize( const std::vector<GDALDataset*>& IrC_inputDS,
+					   const std::vector<GDALDataset*>& IrC_maskDS,
+					   const std::vector<std::vector<int>>& IrC_band,
+		               std::vector<Point2D>& IrC_pt,
+					   std::vector<std::vector<double>>& XrC_z,
+					   const GDALResampleAlg resampling);
+	
+
+	// InterpolationZ is special case of above function which take only one point as an input and it is not contains mask. Also
+	//It process only one band so input is gray scale raster for this function. It will not process multiband raster.
+	void interpolateZ( const std::vector<GDALDataset*>& IrC_inputDS,
+		               std::vector<Point2D>& IrC_pt,
+					   std::vector<double>& XrC_z,
+					   const GDALResampleAlg resampling);
+
+	void transform();
 };
 
 class CPL_DLL OGRCoordinateTransformation3D:public OGRCoordinateTransformation
@@ -88,4 +153,6 @@ public:
 OGRCoordinateTransformation3D CPL_DLL *
 OGRCreateCoordinateTransformation3D( OGRSpatialReference3D *poSource, 
                                    OGRSpatialReference3D *poTarget );
+
+
 #endif

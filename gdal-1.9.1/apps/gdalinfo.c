@@ -66,7 +66,7 @@ int main( int argc, char ** argv )
     GDALRasterBandH	hBand;
     int			i, iBand;
     double		adfGeoTransform[6];
-    GDALDriverH		hDriver;
+    GDALDriverH		hDriver ;
     char		**papszMetadata;
     int                 bComputeMinMax = FALSE, bSample = FALSE;
     int                 bShowGCPs = TRUE, bShowMetadata = TRUE, bShowRAT=TRUE;
