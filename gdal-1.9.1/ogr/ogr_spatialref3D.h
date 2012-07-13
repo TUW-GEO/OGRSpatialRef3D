@@ -29,9 +29,7 @@
 #ifndef _OGR_SPATIALREF3D_H_INCLUDED
 #define _OGR_SPATIALREF3D_H_INCLUDED
 
-#include "F:\Gsoc\bhargav57-OGRSpatialRef3D-5e424eb\gdal-1.9.1\distro\include\gdal_priv.h"
 #include "ogr_spatialref.h"
-#include "F:\Gsoc\bhargav57-OGRSpatialRef3D-5e424eb\gdal-1.9.1\distro\include\gdalwarper.h"
 #include <vector>
 
 

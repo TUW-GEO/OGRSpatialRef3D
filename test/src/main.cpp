@@ -58,9 +58,9 @@ int main()
 	std::cout << std::endl << "Press <Enter> to end program" << std::endl;
   std::cin.get();
 
-  oSourceSRS.SetGeoidModel("F:\\geoid.tif");
+  oSourceSRS.SetGeoidModel("geoid.tif");
 
-  oSourceSRS.SetVCorrModel("F:\\vcorr.tif");
+  oSourceSRS.SetVCorrModel("vcorr.tif");
 
   oSourceSRS.SetVScale(0.15); //setting vertical scale
   oSourceSRS.SetVOffset(100); //setting vertical offset

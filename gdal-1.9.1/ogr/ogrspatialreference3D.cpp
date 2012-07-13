@@ -28,8 +28,9 @@
  ****************************************************************************/
 #include <vector>
 
-#include "..\distro\include\gdal.h"
-#include "..\distro\include\gdalwarper.h"
+#include "..\gcore\gdal.h"
+#include "..\alg\gdalwarper.h"
+#include "..\gcore\gdal_priv.h"
 #include "ogr_spatialref3D.h"
 
 
