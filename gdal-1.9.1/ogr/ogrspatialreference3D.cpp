@@ -165,7 +165,6 @@ OGRSpatialReference3D::~OGRSpatialReference3D()
 }
 
 
-
 OGRSpatialReference3D::OGRSpatialReference3D(const OGRSpatialReference&)
 {
 }
@@ -225,70 +224,40 @@ OGRErr OGRSpatialReference3D::SetVCorrModel( const char * pszVCorrModel )
 	return OGRERR_NONE;
 }
 
-void OGRSpatialReference3D::transform()
+void OGRSpatialReference3D::vgridshift(double x,double y,double *z)
 {
-	vector <GDALDataset*> a;
-	vector <GDALDataset*> Irc_mask;
+	//printf("%f %f",x,y);
 
-	a.push_back(hDatasetVCorrModel_);
-	a.push_back(poDataset);
+	vector <GDALDataset*> IrC_inputDS;
 
+	IrC_inputDS.push_back(hDatasetVCorrModel_);
+	IrC_inputDS.push_back(poDataset);
 
-
-	Point2D p1,p2,p3,p4;
-	p1.setxy(35.630,47.950);
-	/*p2.setxy(10,10);
-	p3.setxy(5,10);
-	p4.setxy(10,5);*/
-
-
+	Point2D p1;
+	p1.setxy(x,y);
+	
 	vector <Point2D> setPoint;
 	setPoint.push_back(p1);
-	/*setPoint.push_back(p2);
-	setPoint.push_back(p3);
-	setPoint.push_back(p4);*/
+	
+	//interpolateZ_Generalize(a,Irc_mask,irc_band,setPoint,z,GDALResampleAlg::GRA_Bilinear);
+
+	vector< vector<double>> z1;
 
 	
+	interpolateZ(IrC_inputDS,setPoint,z1,GDALResampleAlg::GRA_Bilinear);
 
-	vector<vector<int> > irc_band;
-
-	irc_band.resize(2);
-    for (int i = 0; i < 2; ++i)
-	  irc_band[i].resize(2);
-
-	irc_band[0][0]=1;
-	irc_band[0][1]=1;
-	irc_band[1][0]=1;
-	irc_band[1][1]=1;
-	
-	vector<vector<double> > z;
-
-	z.resize(1);
-    for (int i = 0; i < 1; ++i)
-	  z[i].resize(1);
-
-	z[0][0]=0;
-
-	interpolateZ_Generalize(a,Irc_mask,irc_band,setPoint,z,GDALResampleAlg::GRA_Bilinear);
-
-	//printf("%f value of z",z[0][0]);
-
-	vector< double> z1;
-
-	z1.resize(2);
-	z1[0]=0;
-
-	interpolateZ(a,setPoint,z1,GDALResampleAlg::GRA_Bilinear);
 	double Zell=150.490,Zortho;
 
-	Zortho=(Zell+GetVOffset())*GetVScale()+z1[0]+z1[1];
-	printf("Zortho value is %f\n",Zortho);
+	*z=(Zell+GetVOffset())*GetVScale()+z1[0][0]+z1[1][0];
+	
+	/*printf("Zortho value is %f\n",Zortho);
 
 	p1.setz(Zortho);
 
-	printf("X =%f Y=%f  Z=%f\n",p1.X(),p1.Y(),p1.Z());
-}
+	printf("X =%f Y=%f  Z=%f\n",p1.X(),p1.Y(),p1.Z());*/
 
+	
+}
 
 void OGRSpatialReference3D::interpolateZ_Generalize( const std::vector<GDALDataset*>& IrC_inputDS,
 										const std::vector<GDALDataset*>& IrC_maskDS,
@@ -509,7 +478,7 @@ void OGRSpatialReference3D::interpolateZ_Generalize( const std::vector<GDALDatas
 
 void OGRSpatialReference3D::interpolateZ( const std::vector<GDALDataset*>& IrC_inputDS,
 													   std::vector<Point2D>& IrC_pt,
-												       std::vector<double>& XrC_z,
+												       std::vector<std::vector<double>>& XrC_z,
 													   const GDALResampleAlg resampling)
 {
 	// at the moment only bilinear resampling is supported
@@ -541,6 +510,9 @@ void OGRSpatialReference3D::interpolateZ( const std::vector<GDALDataset*>& IrC_i
    }  
 
   XrC_z.resize( 2 );  //Bhargav: because we have two raster
+
+  for( size_t ids=0; ids<IrC_inputDS.size(); ids++ )
+      XrC_z[ids].resize( nrPts);
  
 
   for( size_t ids=0; ids < IrC_inputDS.size(); ids++ )
@@ -642,7 +614,7 @@ void OGRSpatialReference3D::interpolateZ( const std::vector<GDALDataset*>& IrC_i
           // perform bilinear resampling
           double dfSrcX = x[ii]-xmin;
           double dfSrcY = y[ii]-ymin;
-          BilinearResampling( pf_grid, pi_mask, dNoData, blockX, blockY, dfSrcX, dfSrcY, XrC_z[ids] );
+          BilinearResampling( pf_grid, pi_mask, dNoData, blockX, blockY, dfSrcX, dfSrcY, XrC_z[ids][ii] );
         }
   }
 
@@ -652,7 +624,11 @@ void OGRSpatialReference3D::interpolateZ( const std::vector<GDALDataset*>& IrC_i
 }
 }
 
+
+
+
 OGRCoordinateTransformation3D::OGRCoordinateTransformation3D()
 {
 
 }
+

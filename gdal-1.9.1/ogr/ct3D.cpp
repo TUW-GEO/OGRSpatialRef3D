@@ -167,6 +167,12 @@ int OGRProj4CT3D::InitializeNoLock( OGRSpatialReference3D * poSourceIn,
     poSRSSource = (OGRSpatialReference3D*)poSourceIn->Clone();
     poSRSTarget = (OGRSpatialReference3D*)poTargetIn->Clone();
 
+
+	poSRSSource->SetGeoidModel("geoid.tif");
+	poSRSSource->SetVCorrModel("vcorr.tif");
+	poSRSSource->SetVOffset(100);
+	poSRSSource->SetVScale(0.15);
+
     bSourceLatLong = poSRSSource->IsGeographic();
     bTargetLatLong = poSRSTarget->IsGeographic();
 
@@ -588,6 +594,12 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
     long      i;
     int       err;
 
+	double x1,y1,*z1;
+	
+	x1=*x;
+	y1=*y;
+	
+
     srcdefn->ctx->last_errno = 0;
     dstdefn->ctx->last_errno = 0;
 
@@ -762,15 +774,19 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
 /*      Do we need to translate from geoid to ellipsoidal vertical      */
 /*      datum?                                                          */
 /* -------------------------------------------------------------------- */
-    if( srcdefn->has_geoid_vgrids )
+
+
+// Bhargav::Replace this function with my interpolation function which will take x , y and Z as an argument and give us height
+   /* if( srcdefn->has_geoid_vgrids )
     {
         if( pj_apply_vgridshift( srcdefn, "sgeoidgrids", 
                                  &(srcdefn->vgridlist_geoid), 
                                  &(srcdefn->vgridlist_geoid_count),
                                  0, point_count, point_offset, x, y, z ) != 0 )
             return pj_ctx_get_errno(srcdefn->ctx);
-    }
+    }*/
 
+	poSRSSource->vgridshift(x1,y1,z1);
 /* -------------------------------------------------------------------- */
 /*      Convert datums if needed, and possible.                         */
 /* -------------------------------------------------------------------- */

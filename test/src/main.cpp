@@ -40,29 +40,38 @@ int main()
   oSourceSRS.importFromEPSG( 31491 );
   oTargetSRS.importFromEPSG( 31492 );
 
-  double sourcex = 0;
-  double sourcey = 0;
-
-  poCT1=OGRCreateCoordinateTransformation3D( &oSourceSRS,
-                                            &oTargetSRS );
-            
-
-  double targetx = sourcex;
-  double targety = sourcey;
-            
-
-   if( poCT1 == NULL || !poCT1->Transform( 1, &targetx, &targety ) )
-      printf( "Transformation failed.\n" );
-  else
-      printf( "(%f,%f) -> (%f,%f)\n", sourcex, sourcey, targetx, targety );
-	std::cout << std::endl << "Press <Enter> to end program" << std::endl;
-  std::cin.get();
+  double sourcex = 35.630;
+  double sourcey = 47.950;
 
   oSourceSRS.SetGeoidModel("geoid.tif");
 
   oSourceSRS.SetVCorrModel("vcorr.tif");
 
   oSourceSRS.SetVScale(0.15); //setting vertical scale
-  oSourceSRS.SetVOffset(100); //setting vertical offset
-  oSourceSRS.transform();
+  oSourceSRS.SetVOffset(100); 
+
+
+
+  
+  poCT1=OGRCreateCoordinateTransformation3D( &oSourceSRS,
+                                            &oTargetSRS );
+            
+
+  double targetx = sourcex;
+  double targety = sourcey;
+  double targetz = 0;
+ 
+
+  //oSourceSRS.transform();
+            
+
+   if( poCT1 == NULL || !poCT1->Transform( 1, &targetx, &targety ,&targetz) )
+      printf( "Transformation failed.\n" );
+  else
+      printf( "(%f,%f) -> (%f,%f)\n", sourcex, sourcey, targetx, targety );
+	std::cout << std::endl << "Press <Enter> to end program" << std::endl;
+  std::cin.get();
+
+
+  
 }

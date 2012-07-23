@@ -1,7 +1,7 @@
 /******************************************************************************
  *
  * Project:  OpenGIS Simple Features Reference Implementation
- * Purpose:  Classes for manipulating spatial reference systems with 
+ * Purpose:  Classes for manipulating spatial reference systems with
  *           vetical datum suppurt in a platform non-specific manner.
  * Authors:  Gottfried Mandlburger, Johannes Otepka, Bhargav patel
  *
@@ -29,7 +29,12 @@
 #ifndef _OGR_SPATIALREF3D_H_INCLUDED
 #define _OGR_SPATIALREF3D_H_INCLUDED
 
+
+
+
+
 #include "ogr_spatialref.h"
+
 #include <vector>
 
 
@@ -38,18 +43,18 @@
 /************************************************************************/
 
 /**
- * This class respresents a OpenGIS 3D Spatial Reference System. 
- * It is derived from OGRSpatialReference class and adds elements to 
+ * This class respresents a OpenGIS 3D Spatial Reference System.
+ * It is derived from OGRSpatialReference class and adds elements to
  * define the Reference System's Vertical Datum. The class provides:
  *
- *  I  ) a (quasi) geoid raster model for transformation between 
+ *  I  ) a (quasi) geoid raster model for transformation between
  *       ellipsoidal and (quasi) orthometric heights
  *  II ) an additional height correction raster model to compensate the
  *       errors of historic heigth system realizations (e.g. MGI, DHHN...)
- *  III) a constant offset to deal with local height origins, like tidal 
+ *  III) a constant offset to deal with local height origins, like tidal
  *       height systems, local height definitions (e.g. Wiener Null) ...
  *  IV ) a scaling factor (e.g. foot-meter-conversion)
- * 
+ *
 /************************************************************************/
 
 
@@ -104,7 +109,7 @@ public:
                           double dfVScale);
 	 virtual    ~OGRSpatialReference3D();
 
-	OGRErr SetGeoidModel( const char * pszGeoidModel );
+ 	OGRErr SetGeoidModel( const char * pszGeoidModel );
     const char * GetGeoidModel ();
 
     OGRErr SetVCorrModel( const char * pszVCorrModel );
@@ -117,10 +122,10 @@ public:
     double GetVScale ();
 
 	// This interpolatez_generalize function will take multiple point as an argument for a find out interpolation
-	// Also it can find out interolation at multiple band so it can use for R-G-B image 
+	// Also it can find out interolation at multiple band so it can use for R-G-B image
 	// GDALDataset is pointer of raster, IRC_mask is for masking purpose, Irc_Band are band of raster
 	//Irc_pt are point at where you want to find interpolate value it can be single or group of points
-	//Xrc_z give result of interpolation in a coloumn. Result store in a coloumn if you give 4 point as an input then four column of 
+	//Xrc_z give result of interpolation in a coloumn. Result store in a coloumn if you give 4 point as an input then four column of
 	//Xrc_z give interpolated value of four point. , Last one is resampling algoritham
 
 
@@ -130,16 +135,22 @@ public:
 		               std::vector<Point2D>& IrC_pt,
 					   std::vector<std::vector<double>>& XrC_z,
 					   const GDALResampleAlg resampling);
-	
+
 
 	// InterpolationZ is special case of above function which take only one point as an input and it is not contains mask. Also
 	//It process only one band so input is gray scale raster for this function. It will not process multiband raster.
 	void interpolateZ( const std::vector<GDALDataset*>& IrC_inputDS,
 		               std::vector<Point2D>& IrC_pt,
-					   std::vector<double>& XrC_z,
+					   std::vector<std::vector<double>>& XrC_z,
 					   const GDALResampleAlg resampling);
 
-	void transform();
+	void vgridshift(double x,double y, double *z);
+
+	void interpolateZ( const std::vector<GDALDataset*>& IrC_inputDS,
+													   double x,
+													   double y,
+													   double z,
+												       const GDALResampleAlg resampling);
 };
 
 class CPL_DLL OGRCoordinateTransformation3D:public OGRCoordinateTransformation
@@ -149,7 +160,7 @@ public:
 };
 
 OGRCoordinateTransformation3D CPL_DLL *
-OGRCreateCoordinateTransformation3D( OGRSpatialReference3D *poSource, 
+OGRCreateCoordinateTransformation3D( OGRSpatialReference3D *poSource,
                                    OGRSpatialReference3D *poTarget );
 
 
