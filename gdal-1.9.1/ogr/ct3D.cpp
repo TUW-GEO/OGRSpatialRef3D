@@ -594,7 +594,7 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
     long      i;
     int       err;
 
-	double x1,y1,*z1;
+	double x1,y1,z1;
 	
 	x1=*x;
 	y1=*y;
@@ -786,7 +786,7 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
             return pj_ctx_get_errno(srcdefn->ctx);
     }*/
 
-	poSRSSource->vgridshift(x1,y1,z1);
+	poSRSSource->vgridshift(x1,y1,&z1);
 /* -------------------------------------------------------------------- */
 /*      Convert datums if needed, and possible.                         */
 /* -------------------------------------------------------------------- */

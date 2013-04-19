@@ -31,12 +31,12 @@
 
 
 
-
-
 #include "ogr_spatialref.h"
+#include "gdalwarper.h"				//needed for GDALResampleAlg
 
 #include <vector>
 
+class GDALDataset;
 
 /************************************************************************/
 /*                         OGRSpatialReference3D                        */

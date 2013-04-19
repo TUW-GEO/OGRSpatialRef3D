@@ -242,7 +242,6 @@ void OGRSpatialReference3D::vgridshift(double x,double y,double *z)
 	//interpolateZ_Generalize(a,Irc_mask,irc_band,setPoint,z,GDALResampleAlg::GRA_Bilinear);
 
 	vector< vector<double>> z1;
-
 	
 	interpolateZ(IrC_inputDS,setPoint,z1,GDALResampleAlg::GRA_Bilinear);
 
