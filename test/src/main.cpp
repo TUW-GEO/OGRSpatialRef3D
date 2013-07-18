@@ -1,33 +1,188 @@
-#include <stdio.h>
+//#include <stdio.h>
 #include <iostream>
+#include <fstream>
+#include <string>
+#include <sstream>
 
 #include "cpl_conv.h"
 #include "ogr_spatialref3D.h"
+#include "OptionParser.h"
 
-int main()
+using namespace std;
+
+char buffer[1024];
+
+char *loadWktFile(const char* sWktFilename){
+	ifstream inFile;
+
+	inFile.open(sWktFilename, ios::in);
+	if (!inFile) {
+	  cerr << "Can't open input file " << sWktFilename << endl;
+	  exit(1);
+	}
+	memset(buffer, 0, 1024);
+
+	inFile.seekg(0,ios::end);
+    streampos	length = inFile.tellg();
+    inFile.seekg(0,ios::beg);
+
+	inFile.read(buffer,length);
+	return buffer;
+}
+
+int main(int argc, char* argv[])
 {
   //init gdal/proj.4 data directory path 
-	CPLSetConfigOption("GDAL_DATA", "..\\gdal-1.9.1\\distro\\data");
+	optparse::OptionParser parser = optparse::OptionParser().description("OGRSpatialRef3D test program");
 
-  OGRSpatialReference3D oSourceSRS, oTargetSRS;
-  OGRCoordinateTransformation3D *poCT1;
-           
+	parser.add_option("-g", "--gdal-data").dest("gdal_data").help("set path to gdal data").set_default("..\\gdal-1.10.0\\data");
+	parser.add_option("-s", "--source-coord").dest("src_coord").help("set source coordinate system WKT_FILE").metavar("WKT_FILE");
+	parser.add_option("-d", "--dest-coord").dest("dst_coord").help("set destination coordinate system WKT_FILE").metavar("WKT_FILE");
+
+	parser.add_option("-v", "--source-wkt").dest("src_wkt").help("set source coordinate system WKT").metavar("WKT");
+	parser.add_option("-w", "--destination-wkt").dest("dst_wkt").help("set destination coordinate system WKT").metavar("WKT");
+
+	parser.add_option("-i", "--input-coord").dest("input_file").help("set input coordinate data FILE").metavar("FILE");
+
+	optparse::Values options = parser.parse_args(argc, argv);
+	vector<string> args = parser.args();
+
+	if ((options["src_coord"].length() == 0 && options["src_wkt"].length() == 0) ||
+		(options["dst_coord"].length() == 0 && options["dst_wkt"].length() == 0)){
+			cerr << "Source or Destination Coordinate is not set." << endl;
+			exit(1);
+	}
+
+	OGRSpatialReference3D oSourceSRS, oTargetSRS;
+
+	if(options["src_coord"].length() != 0){
+		char *wkt1 = loadWktFile(options["src_coord"].c_str());
+		oSourceSRS.importFromWkt(&(wkt1));
+		//oSourceSRS.exportToProj4(&(wkt1));
+		//cout << wkt1 << endl;
+	}
+	else{
+		char *cstr = new char[options["src_wkt"].length() + 1];
+		strcpy(cstr, options["src_wkt"].c_str());
+		oSourceSRS.importFromWkt(&(cstr));
+		delete [] cstr;
+	}
+
+	if(options["dst_coord"].length() != 0){
+		char *wkt2 = loadWktFile(options["dst_coord"].c_str());
+		oTargetSRS.importFromWkt(&(wkt2));
+		//oTargetSRS.exportToProj4(&(wkt2));
+		//cout << wkt2 << endl;
+	}
+	else{
+		char *cstr = new char[options["dst_wkt"].length() + 1];
+		strcpy(cstr, options["dst_wkt"].c_str());
+		oTargetSRS.importFromWkt(&(cstr));
+		delete [] cstr;
+	}
+
+	CPLSetConfigOption("GDAL_DATA", options["gdal_data"].c_str());
+	if(options["input_file"].length() == 0){
+		cerr << "no data FILE given" << endl;
+		exit(1);
+	}
+
+	ifstream inFile;
+	inFile.open(options["input_file"], ios::in);
+	if (!inFile) {
+		cerr << "Can't open input file " << options["input_file"] << endl;
+		exit(1);
+	}
+	else{
+		cout << "reading file " << options["input_file"] << endl;
+	}
+
+
+	OGRCoordinateTransformation3D *poCT = OGRCreateCoordinateTransformation3D( &oSourceSRS,
+                                               &oTargetSRS );
+
+	string line="";
+	while(!inFile.eof()){
+		getline(inFile, line);
+		stringstream ss(line);
+
+		double sourcex = 0.0;  
+		double sourcey = 0.0;
+		double sourcez = 0.0;
+
+		ss >> sourcex >> sourcey >> sourcez;
+
+		double targetx = sourcex;
+		double targety = sourcey;
+		double targetz = sourcez;
+
+		cout << sourcex << sourcey << sourcez << endl;
+		//do actual transformation
+		if( poCT == NULL || !poCT->Transform( 1, &targetx, &targety ,&targetz) )
+			printf( "Transformation failed.\n" );
+		else
+			printf( "(%f,%f,%f) -> (%f,%f,%f)\n", sourcex, sourcey, sourcez, targetx, targety, targetz );
+	}
+
+	/*
+  if(argc==4){
+	OGRSpatialReference oSourceSRS1, oTargetSRS1;
+	oSourceSRS1.importFromWkt(&(argv[2]));
+	oTargetSRS1.importFromWkt(&(argv[3]));
+	OGRCoordinateTransformation *poCT = OGRCreateCoordinateTransformation( &oSourceSRS1, &oTargetSRS1 );
+
+	ifstream inFile;
+	inFile.open(argv[1], ios::in);
+	if (!inFile) {
+	  cerr << "Can't open input file " << argv[1] << endl;
+	  exit(1);
+	}
+
+	string line="";
+	
+	while(!inFile.eof()){
+		getline(inFile, line);
+		stringstream ss(line);
+
+		double sourcex = 0.0;  
+		double sourcey = 0.0;
+		double sourcez = 0.0;
+
+		ss >> sourcex >> sourcey >> sourcez;
+
+		double targetx = sourcex;
+		double targety = sourcey;
+		double targetz = sourcez;
+
+		//do actual transformation
+		if( poCT == NULL || !poCT->Transform( 1, &targetx, &targety ,&targetz) )
+			printf( "Transformation failed.\n" );
+		else
+			printf( "(%f,%f,%f) -> (%f,%f,%f)\n", sourcex, sourcey, sourcez, targetx, targety, targetz );
+	}
+		
+  }
+  else{
+	  cout << "test" << endl;
+	  OGRSpatialReference3D oSourceSRS, oTargetSRS;
+	OGRCoordinateTransformation3D *poCT1;
   //init coordinate system from epsg code
 	oSourceSRS.importFromEPSG( 31491 );	
-  oTargetSRS.importFromEPSG( 31492 );
+	oTargetSRS.importFromEPSG( 31492 );
 
-  oSourceSRS.SetGeoidModel("geoid.tif");	//set geoid
-  oSourceSRS.SetVCorrModel("vcorr.tif");	//set vertical correction model
+  //oSourceSRS.SetGeoidModel("geoid.tif");	//set geoid
+  //oSourceSRS.SetVCorrModel("vcorr.tif");	//set vertical correction model
 
-  oSourceSRS.SetVScale(0.15); //setting vertical scale
-  oSourceSRS.SetVOffset(100); 
+  //oSourceSRS.SetVScale(0.15); //setting vertical scale
+  //oSourceSRS.SetVOffset(100); 
 
 	//create coordinate transformation object
   poCT1 = OGRCreateCoordinateTransformation3D( &oSourceSRS,
                                                &oTargetSRS );
 
+
 	double sourcex = 35.630;
-  double sourcey = 47.950;
+	double sourcey = 47.950;
 	double sourcez = 0;
             
   double targetx = sourcex;
@@ -39,6 +194,8 @@ int main()
       printf( "Transformation failed.\n" );
   else
       printf( "(%f,%f,%f) -> (%f,%f,%f)\n", sourcex, sourcey, sourcez, targetx, targety, targetz );
+  }
 	std::cout << std::endl << "Press <Enter> to end program" << std::endl;
   std::cin.get();
+  */
 }

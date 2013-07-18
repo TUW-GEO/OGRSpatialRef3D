@@ -47,6 +47,9 @@ BASE_INCLUDE =	/INCLUDE:_GDALSimpleImageWarp@36 \
 		/INCLUDE:_GDALReprojectImage@48 \
 		/INCLUDE:_GDALComputeMedianCutPCT@32 \
 		/INCLUDE:_GDALDitherRGB2PCT@28 \
+        /INCLUDE:??0OGRSpatialReference3D@@QAE@XZ \
+		/INCLUDE:??1OGRSpatialReference3D@@UAE@XZ \
+		/INCLUDE:??_GOGRSpatialReference3D@@UAEPAXI@Z \
 		/INCLUDE:_OCTNewCoordinateTransformation@8 $(VB6_SAFEARRAYSYM)
 !ELSE
 BASE_INCLUDE =	/INCLUDE:$(SYM_PREFIX)GDALSimpleImageWarp \

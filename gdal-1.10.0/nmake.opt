@@ -51,7 +51,7 @@ MSVC_VER=1500
 # But the paths *should* be absolute (relative paths mess up in submakefiles).
 
 !IFNDEF GDAL_HOME
-GDAL_HOME = "C:\warmerda\bld"
+GDAL_HOME = C:\GDAL
 !ENDIF
 !IFNDEF BINDIR
 BINDIR = $(GDAL_HOME)\bin
@@ -75,12 +75,12 @@ HTMLDIR = $(GDAL_HOME)\html
 # Set this to the installed directory containing python.  If you don't
 # have python just let it point to a directory that does not exist (as now).
 !IFNDEF PYDIR 
-PYDIR   =	"C:\Software\Python24"
+PYDIR   =	C:\Python27
 !ENDIF
 
 # Set the location of your SWIG installation
 !IFNDEF SWIG
-SWIG = swig.exe
+SWIG = D:\Programs\SWIG\swig.exe
 !ENDIF
 
 # SWIG Java settings
@@ -88,7 +88,7 @@ SWIG = swig.exe
 JAVA_HOME = c:\j2sdk1.4.2_12
 !ENDIF
 !IFNDEF ANT_HOME
-ANT_HOME=c:\programmi\apache-ant-1.7.0
+ANT_HOME=C:\NVPACK\apache-ant-1.8.2\
 !ENDIF
 JAVADOC=$(JAVA_HOME)\bin\javadoc
 JAVAC=$(JAVA_HOME)\bin\javac
@@ -430,8 +430,8 @@ GRIB_SETTING=yes
 # Uncomment the following lines to link PROJ.4 library statically. Otherwise
 # it will be linked dynamically during runtime.
 #PROJ_FLAGS = -DPROJ_STATIC
-#PROJ_INCLUDE = -Id:\projects\proj.4\src
-#PROJ_LIBRARY = d:\projects\proj.4\src\proj_i.lib
+PROJ_INCLUDE = -I..\..\proj-4.8.0\distro\include
+PROJ_LIBRARY = ..\proj-4.8.0\distro\lib\proj_i.lib
 
 # Add ORACLE support.
 # Uncomment the following line to enable OCI Oracle Spatial support.
@@ -555,7 +555,7 @@ ADD_LIBS	=
 # you don't have Numeric Python installed (with include files).  Numeric
 # integration may not work.  This only appears to the old generation 
 # bindings. 
-#HAVE_NUMPY=1
+HAVE_NUMPY=1
 
 ########### END OF STUFF THAT NORMALLY NEEDS TO BE UPDATED ##################
 

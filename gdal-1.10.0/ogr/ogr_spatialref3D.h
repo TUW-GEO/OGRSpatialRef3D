@@ -30,13 +30,13 @@
 #define _OGR_SPATIALREF3D_H_INCLUDED
 
 
-
+#include "gdal_priv.h"
 #include "ogr_spatialref.h"
 #include "gdalwarper.h"				//needed for GDALResampleAlg
 
 #include <vector>
 
-class GDALDataset;
+//class GDALDataset;
 
 /************************************************************************/
 /*                         OGRSpatialReference3D                        */
@@ -93,15 +93,16 @@ public:
 
 class CPL_DLL OGRSpatialReference3D:public OGRSpatialReference
 {
-  const char * pszGeoid_;
-  const char * pszVCorrModel_;
-  double dfVOffset_;
-  double dfVScale_;
-  GDALDataset  *poDataset;
-  GDALDataset  *hDatasetVCorrModel_;
+	bool bHasGeoid;
+	bool bHasVCorr;
+
+	double dfVOffset_;
+	double dfVScale_;
+
+	GDALDataset  *poGeoid;
+	GDALDataset  *poVCorr;
 public:
 	OGRSpatialReference3D();
-	OGRSpatialReference3D(const OGRSpatialReference&);
 	OGRSpatialReference3D(const char * pszWKT,
                           const char * pszGeoidModel,
                           const char * pszVCorrModel,
@@ -121,6 +122,12 @@ public:
     OGRErr SetVScale( double  dfVScale );
     double GetVScale ();
 
+	bool HasGeoidModel();
+	bool HasVCorrModel();
+
+	OGRErr ApplyVerticalCorrection(int is_inverse, unsigned int point_count, double *x, double *y, double *z);
+
+protected:
 	// This interpolatez_generalize function will take multiple point as an argument for a find out interpolation
 	// Also it can find out interolation at multiple band so it can use for R-G-B image
 	// GDALDataset is pointer of raster, IRC_mask is for masking purpose, Irc_Band are band of raster
@@ -144,13 +151,15 @@ public:
 					   std::vector<std::vector<double>>& XrC_z,
 					   const GDALResampleAlg resampling);
 
-	void vgridshift(double x,double y, double *z);
-
 	void interpolateZ( const std::vector<GDALDataset*>& IrC_inputDS,
 													   double x,
 													   double y,
 													   double z,
 												       const GDALResampleAlg resampling);
+
+	void vgridshift(double x,double y, double *z);
+
+	double GetValueAt(GDALDataset* hDataset, double x, double y);
 };
 
 class CPL_DLL OGRCoordinateTransformation3D:public OGRCoordinateTransformation

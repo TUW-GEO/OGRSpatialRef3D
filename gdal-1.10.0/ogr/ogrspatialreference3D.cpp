@@ -3,7 +3,7 @@
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Classes for manipulating spatial reference systems with 
  *           vetical datum suppurt in a platform non-specific manner.
- * Authors:  Gottfried Mandlburger, Johannes Otepka, Bhargav patel
+ * Authors:  Gottfried Mandlburger, Johannes Otepka, Bhargav patel, Peb Ruswono Aryan
  *
  ******************************************************************************
  * Copyright (c) 2012,  I.P.F., TU Vieanna.
@@ -26,13 +26,16 @@
  * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
  * DEALINGS IN THE SOFTWARE.
  ****************************************************************************/
-#include <vector>
+#include <iostream>
 
+#include <vector>
+#include "ogr_spatialref3D.h"
 #include "..\gcore\gdal.h"
 #include "..\alg\gdalwarper.h"
 #include "..\gcore\gdal_priv.h"
-#include "ogr_spatialref3D.h"
 
+#define RAD_TO_DEG	57.29577951308232
+#define DEG_TO_RAD	.0174532925199432958
 
 using namespace std;
 /************************************************************************/
@@ -158,14 +161,15 @@ static int BilinearResampling( float *pf_grid, unsigned char *pi_mask,
 OGRSpatialReference3D::OGRSpatialReference3D()
 {
 	GDALAllRegister();
+
+	bHasGeoid = false;
+	bHasVCorr = false;
+
+	poGeoid = NULL;
+	poVCorr = NULL;
 }
 
 OGRSpatialReference3D::~OGRSpatialReference3D()
-{
-}
-
-
-OGRSpatialReference3D::OGRSpatialReference3D(const OGRSpatialReference&)
 {
 }
 
@@ -175,11 +179,44 @@ OGRSpatialReference3D::OGRSpatialReference3D(const char * pszWKT,
                           double dfVOffset,
                           double dfVScale)
 {
+	char *str = new char[strlen(pszWKT)+1];
+	strcpy(str, pszWKT);
+	if(OGRERR_NONE != importFromWkt(&(str)))
+	{
+		//handle for import error
+	}
+	delete[] str;
+
+	const OGR_SRSNode *poNode = GetAttrNode( "GEOID" );
+	if (poNode != NULL){
+		const char *pszData = poNode->GetChild(1)->GetChild(0)->GetValue();
+		std::cout << "Loading GEOID : " << pszData << std::endl;
+		if(OGRERR_NONE != SetGeoidModel(pszData))
+		{
+			//handle for loading error
+		}
+	}
+
+	poNode = GetAttrNode( "VCORR" );
+	if (poNode != NULL){
+		const char *pszData = poNode->GetChild(1)->GetChild(0)->GetValue();
+		std::cout << "Loading VCORR : " << pszData << std::endl;
+		if(OGRERR_NONE != SetVCorrModel(pszData))
+		{
+			//handle for loading error
+		}
+	}
+
+	//let's ignore these
+	//SetGeoidModel( pszGeoidModel );
+	//SetVCorrModel( pszVCorrModel );
+	SetVOffset( dfVOffset );
+	SetVScale( dfVScale );
 }
 
 OGRErr OGRSpatialReference3D::SetVOffset( double  dfVOffset )
 {
-	dfVOffset_=dfVOffset;
+	dfVOffset_ = dfVOffset;
 	return OGRERR_NONE;
 }
 
@@ -191,7 +228,7 @@ double OGRSpatialReference3D::GetVOffset ()
 
 OGRErr OGRSpatialReference3D::SetVScale( double  dfVScale )
 {
-	dfVScale_=dfVScale;
+	dfVScale_ = dfVScale;
 	return OGRERR_NONE;
 }
 
@@ -202,32 +239,121 @@ double OGRSpatialReference3D::GetVScale ()
 
 OGRErr OGRSpatialReference3D::SetGeoidModel( const char * pszGeoidModel )
 {
-	poDataset = (GDALDataset *) GDALOpen( pszGeoidModel, GA_ReadOnly );
+	poGeoid = (GDALDataset *) GDALOpen( pszGeoidModel, GA_ReadOnly );
 	
-	if( poDataset == NULL )
+	if( poGeoid == NULL )
     {
         printf("gdal failed - unable to open '%s'.\n",
                  pszGeoidModel );
+		return OGRERR_FAILURE;
 	}
+	bHasGeoid = true;
 	return OGRERR_NONE;
 }
 
 OGRErr OGRSpatialReference3D::SetVCorrModel( const char * pszVCorrModel )
 {
-	hDatasetVCorrModel_=(GDALDataset *) GDALOpen( pszVCorrModel, GA_ReadOnly );
+	poVCorr = (GDALDataset *) GDALOpen( pszVCorrModel, GA_ReadOnly );
 
-	if( poDataset == NULL )
+	if( poVCorr == NULL )
     {
         printf("gdal failed - unable to open '%s'.\n",
                  pszVCorrModel );
+		return OGRERR_FAILURE;
+	}
+	bHasVCorr = true;
+	return OGRERR_NONE;
+}
+
+OGRErr OGRSpatialReference3D::ApplyVerticalCorrection(int is_inverse, unsigned int point_count, double *x, double *y, double *z)
+{
+	for(unsigned int i=0; i<point_count; ++i)
+	{
+		cout << x[i] << " " << y[i] << " " << z[i] << endl;
+		double z_geoid = 0.0;
+		double z_vcorr = 0.0;
+
+		if(HasGeoidModel()){
+			z_geoid = GetValueAt(poGeoid, x[i], y[i]);
+		}
+
+		if(HasVCorrModel()){
+			z_vcorr = GetValueAt(poVCorr, x[i], y[i]);
+		}
+
+		if(is_inverse){
+			z[i] += (z_geoid + z_vcorr);
+		}
+		else{
+			z[i] -= (z_geoid + z_vcorr);
+		}
 	}
 	return OGRERR_NONE;
 }
 
+double OGRSpatialReference3D::GetValueAt(GDALDataset* hDataset, double x, double y)
+{
+	cout << "get raster size" << endl;
+	int nXsize = hDataset->GetRasterXSize();
+    int nYsize = hDataset->GetRasterYSize();
+
+	cout << "get geo transform" << endl;
+    double geotrans[6];
+    hDataset->GetGeoTransform(geotrans);
+
+	cout << "invert geo transform" << endl;
+	double inv_geotrans[6];
+    if( GDALInvGeoTransform( geotrans, inv_geotrans ) == 0 )
+      throw std::exception( "inversion of geo transformation failed." );
+
+	cout << "calc raster coord" << endl;
+	double dPixel = inv_geotrans[0]+ 
+          + x * inv_geotrans[1] * RAD_TO_DEG
+          + y * inv_geotrans[2] * RAD_TO_DEG;
+
+    double dLine = inv_geotrans[3]
+          + x * inv_geotrans[4] * RAD_TO_DEG
+          + y * inv_geotrans[5] * RAD_TO_DEG;
+
+	cout << " p,l : " << dPixel << " " << dLine << endl;
+	int px = (int)dPixel;
+	int py = (int)dLine;
+	cout << px << " " << py << endl;
+	if (px < 0 || py < 0 || px >= nXsize || py >= nYsize)
+	{
+		cout << "invalid raster coordinate";
+	}
+	else{
+		//this code assumes that the location has 4 neighbor support
+		//noData values are currently ignored --> TODO
+        double *padH = (double *) CPLMalloc(sizeof(double)*4);
+		hDataset->RasterIO( GF_Read, px, py, 2, 2, 
+                          padH, 2, 2, GDT_Float64, 
+                          1, NULL, 0, 0, 0 );
+
+		cout << padH[0] << " " << padH[1] << " " << padH[2] << " "<< padH[3]<< endl;
+
+		double dx = dPixel - px;
+		double dy = dLine - py;
+
+		double zx_top = dx * padH[1] + (1.0 - dx) * padH[0];
+		double zx_bottom = dx * padH[3] + (1.0 - dx) * padH[2];
+		double z_interp = dy * zx_bottom + (1.0 - dy) * zx_top;
+
+		cout << "H " << z_interp << endl;
+		CPLFree(padH);
+
+		return z_interp;
+	}
+
+	return 0.0;
+}
+
 void OGRSpatialReference3D::vgridshift(double x,double y,double *z)
 {
+	cout << x << " " << y << " " << *z << endl;
 	//printf("%f %f",x,y);
-
+	/*
 	vector <GDALDataset*> IrC_inputDS;
 
 	IrC_inputDS.push_back(hDatasetVCorrModel_);
@@ -243,12 +369,13 @@ void OGRSpatialReference3D::vgridshift(double x,double y,double *z)
 
 	vector< vector<double>> z1;
 	
-	interpolateZ(IrC_inputDS,setPoint,z1,GDALResampleAlg::GRA_Bilinear);
+	interpolateZ(IrC_inputDS, setPoint, z1, GDALResampleAlg::GRA_Bilinear);
 
-	double Zell=150.490,Zortho;
+	double Zell=150.490;
+	double Zortho;
 
-	*z=(Zell+GetVOffset())*GetVScale()+z1[0][0]+z1[1][0];
-	
+	*z = (*z + GetVOffset())*GetVScale() + z1[0][0] + z1[1][0];
+	*/
 	/*printf("Zortho value is %f\n",Zortho);
 
 	p1.setz(Zortho);
@@ -368,7 +495,7 @@ void OGRSpatialReference3D::interpolateZ_Generalize( const std::vector<GDALDatas
     double ymin =  DBL_MAX;
     double xmax = -DBL_MAX;
     double ymax = -DBL_MAX;
-    for( int i=0; i<nrPts; i++ )
+    for(unsigned int i=0; i<nrPts; i++ )
     {
 		double dPixel = geotransInv[0]+ 
           + IrC_pt[i].X() * geotransInv[1]
@@ -542,7 +669,7 @@ void OGRSpatialReference3D::interpolateZ( const std::vector<GDALDataset*>& IrC_i
     double ymin =  DBL_MAX;
     double xmax = -DBL_MAX;
     double ymax = -DBL_MAX;
-    for( int i=0; i<nrPts; i++ )
+    for(unsigned int i=0; i<nrPts; i++ )
     {
       double dPixel = geotransInv[0]
           + IrC_pt[i].X() * geotransInv[1]
@@ -623,10 +750,18 @@ void OGRSpatialReference3D::interpolateZ( const std::vector<GDALDataset*>& IrC_i
 }
 }
 
+bool OGRSpatialReference3D::HasGeoidModel ()
+{
+	return bHasGeoid;
+}
+
+bool OGRSpatialReference3D::HasVCorrModel ()
+{
+	return bHasVCorr;
+}
 
 
-
-OGRCoordinateTransformation3D::OGRCoordinateTransformation3D()
+CPL_DLL OGRCoordinateTransformation3D::OGRCoordinateTransformation3D()
 {
 
 }

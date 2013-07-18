@@ -43,7 +43,7 @@ static const int transient_error[50] = {
 #define Rz_BF (defn->datum_params[5])
 #define M_BF  (defn->datum_params[6])
 
-class OGRProj4CT3D : public OGRCoordinateTransformation3D
+class CPL_DLL OGRProj4CT3D : public OGRCoordinateTransformation3D
 {
 	
 	OGRSpatialReference3D *poSRSSource;
@@ -105,12 +105,12 @@ OGRCoordinateTransformation* creat()
 	return a;
 }
 
-OGRCoordinateTransformation3D*  
+CPL_DLL OGRCoordinateTransformation3D*  
 OGRCreateCoordinateTransformation3D( OGRSpatialReference3D *poSource, 
                                    OGRSpatialReference3D *poTarget )
 {
 	OGRProj4CT3D *a;
-	a=new OGRProj4CT3D();
+	a = new OGRProj4CT3D();
 	if( !a->Initialize( poSource, poTarget ) )
     {
         delete a;
@@ -164,14 +164,15 @@ int OGRProj4CT3D::InitializeNoLock( OGRSpatialReference3D * poSourceIn,
 	 if( poSourceIn == NULL || poTargetIn == NULL )
         return FALSE;
 
-    poSRSSource = (OGRSpatialReference3D*)poSourceIn->Clone();
-    poSRSTarget = (OGRSpatialReference3D*)poTargetIn->Clone();
+    poSRSSource = poSourceIn;//(OGRSpatialReference3D*)poSourceIn->Clone();
+    poSRSTarget = poTargetIn;//(OGRSpatialReference3D*)poTargetIn->Clone();
 
-
+	/*
 	poSRSSource->SetGeoidModel("geoid.tif");
 	poSRSSource->SetVCorrModel("vcorr.tif");
 	poSRSSource->SetVOffset(100);
 	poSRSSource->SetVScale(0.15);
+	*/
 
     bSourceLatLong = poSRSSource->IsGeographic();
     bTargetLatLong = poSRSTarget->IsGeographic();
@@ -367,7 +368,6 @@ if( bSourceLatLong )
 }
 
 OGRSpatialReference3D* OGRProj4CT3D::GetSourceCS()
-
 {
     return poSRSSource;
 }
@@ -491,7 +491,7 @@ int   err, i;
 
 	 else
      {
-        err =ct3D_pj_transform( psPJSource, psPJTarget, nCount, 1, x, y, z );
+        err = ct3D_pj_transform( psPJSource, psPJTarget, nCount, 1, x, y, z );
      }
 
 	/* -------------------------------------------------------------------- */
@@ -594,10 +594,10 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
     long      i;
     int       err;
 
-	double x1,y1,z1;
+	//double x1,y1;
 	
-	x1=*x;
-	y1=*y;
+	//x1=*x;
+	//y1=*y;
 	
 
     srcdefn->ctx->last_errno = 0;
@@ -723,6 +723,7 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
 /*      Do we need to translate from geoid to ellipsoidal vertical      */
 /*      datum?                                                          */
 /* -------------------------------------------------------------------- */
+	/*
     if( srcdefn->has_geoid_vgrids )	
     {
         if( pj_apply_vgridshift( srcdefn, "sgeoidgrids", 
@@ -731,7 +732,12 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
                                  0, point_count, point_offset, x, y, z ) != 0 )
             return pj_ctx_get_errno(srcdefn->ctx);
     }
-
+	*/
+	//PEB
+	if(poSRSSource->HasGeoidModel() || poSRSSource->HasVCorrModel())
+	{
+		poSRSSource->ApplyVerticalCorrection(0, point_count, x, y, z);
+	}
 /* -------------------------------------------------------------------- */
 /*      Convert datums if needed, and possible.                         */
 /* -------------------------------------------------------------------- */
@@ -747,6 +753,13 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
 /*      Do we need to translate from geoid to ellipsoidal vertical      */
 /*      datum?                                                          */
 /* -------------------------------------------------------------------- */
+	//PEB
+	if(poSRSTarget->HasGeoidModel() || poSRSSource->HasVCorrModel())
+	{
+		//x y z coordinates are in radian
+		poSRSTarget->ApplyVerticalCorrection(1, point_count, x, y, z);
+	}
+	/*
     if( dstdefn->has_geoid_vgrids )
     {
         if( pj_apply_vgridshift( dstdefn, "sgeoidgrids", 
@@ -755,63 +768,7 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
                                  1, point_count, point_offset, x, y, z ) != 0 )
             return dstdefn->ctx->last_errno;
     }
-        
-
-/* -------------------------------------------------------------------- */
-/*      But if they are staying lat long, adjust for the prime          */
-/*      meridian if there is one in effect.                             */
-/* -------------------------------------------------------------------- */
-    if( dstdefn->from_greenwich != 0.0 )
-    {
-        for( i = 0; i < point_count; i++ )
-        {
-            if( x[point_offset*i] != HUGE_VAL )
-                x[point_offset*i] -= dstdefn->from_greenwich;
-        }
-    }
-
-/* -------------------------------------------------------------------- */
-/*      Do we need to translate from geoid to ellipsoidal vertical      */
-/*      datum?                                                          */
-/* -------------------------------------------------------------------- */
-
-
-// Bhargav::Replace this function with my interpolation function which will take x , y and Z as an argument and give us height
-   /* if( srcdefn->has_geoid_vgrids )
-    {
-        if( pj_apply_vgridshift( srcdefn, "sgeoidgrids", 
-                                 &(srcdefn->vgridlist_geoid), 
-                                 &(srcdefn->vgridlist_geoid_count),
-                                 0, point_count, point_offset, x, y, z ) != 0 )
-            return pj_ctx_get_errno(srcdefn->ctx);
-    }*/
-
-	poSRSSource->vgridshift(x1,y1,&z1);
-/* -------------------------------------------------------------------- */
-/*      Convert datums if needed, and possible.                         */
-/* -------------------------------------------------------------------- */
-    if( pj_datum_transform( srcdefn, dstdefn, point_count, point_offset, 
-                            x, y, z ) != 0 )
-    {
-        if( srcdefn->ctx->last_errno != 0 )
-            return srcdefn->ctx->last_errno;
-        else
-            return dstdefn->ctx->last_errno;
-    }
-
-/* -------------------------------------------------------------------- */
-/*      Do we need to translate from geoid to ellipsoidal vertical      */
-/*      datum?                                                          */
-/* -------------------------------------------------------------------- */
-    if( dstdefn->has_geoid_vgrids )
-    {
-        if( pj_apply_vgridshift( dstdefn, "sgeoidgrids", 
-                                 &(dstdefn->vgridlist_geoid), 
-                                 &(dstdefn->vgridlist_geoid_count),
-                                 1, point_count, point_offset, x, y, z ) != 0 )
-            return dstdefn->ctx->last_errno;
-    }
-
+      */  
 /* -------------------------------------------------------------------- */
 /*      But if they are staying lat long, adjust for the prime          */
 /*      meridian if there is one in effect.                             */
