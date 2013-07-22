@@ -6,7 +6,7 @@
  * Authors:  Gottfried Mandlburger, Johannes Otepka, Bhargav patel, Peb Ruswono Aryan
  *
  ******************************************************************************
- * Copyright (c) 2012,  I.P.F., TU Vieanna.
+ * Copyright (c) 2012,  I.P.F., TU Vienna.
   *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -36,6 +36,7 @@
 
 #define RAD_TO_DEG	57.29577951308232
 #define DEG_TO_RAD	.0174532925199432958
+#define EPSILON 1e-5
 
 using namespace std;
 /************************************************************************/
@@ -100,7 +101,7 @@ static int BilinearResampling( float *pf_grid, unsigned char *pi_mask,
   }
   else
   {
-    dfMskUL = dfMskUR = dfMskLR = dfMskLL = 1.0;  // oder doch 0.0 -> wie ist die Maske definiert?
+    dfMskUL = dfMskUR = dfMskLR = dfMskLL = 1.0;  // oder doch 0.0 -> wie ist die Maske definiert?//PEB: by multiplicating mask value, assuming all is not noDataValue
   }
 
   // Upper Left Pixel
@@ -167,6 +168,9 @@ OGRSpatialReference3D::OGRSpatialReference3D()
 
 	poGeoid = NULL;
 	poVCorr = NULL;
+
+	dfVOffset_ = 0.0;
+	dfVScale_ = 0.0;
 }
 
 OGRSpatialReference3D::~OGRSpatialReference3D()
@@ -269,7 +273,7 @@ OGRErr OGRSpatialReference3D::ApplyVerticalCorrection(int is_inverse, unsigned i
 {
 	for(unsigned int i=0; i<point_count; ++i)
 	{
-		cout << x[i] << " " << y[i] << " " << z[i] << endl;
+		cout << "XYZ : " << x[i] << " " << y[i] << " " << z[i] << endl;
 		double z_geoid = 0.0;
 		double z_vcorr = 0.0;
 
@@ -281,12 +285,11 @@ OGRErr OGRSpatialReference3D::ApplyVerticalCorrection(int is_inverse, unsigned i
 			z_vcorr = GetValueAt(poVCorr, x[i], y[i]);
 		}
 
-		if(is_inverse){
-			z[i] += (z_geoid + z_vcorr);
-		}
-		else{
-			z[i] -= (z_geoid + z_vcorr);
-		}
+		double dCorrection = (z_geoid + z_vcorr + dfVOffset_);
+		if(is_inverse)
+			z[i] += dCorrection;
+		else
+			z[i] -= dCorrection;
 	}
 	return OGRERR_NONE;
 }
@@ -296,6 +299,7 @@ double OGRSpatialReference3D::GetValueAt(GDALDataset* hDataset, double x, double
 	cout << "get raster size" << endl;
 	int nXsize = hDataset->GetRasterXSize();
     int nYsize = hDataset->GetRasterYSize();
+	cout << " " << nXsize << " " << nYsize << endl;
 
 	cout << "get geo transform" << endl;
     double geotrans[6];
@@ -306,6 +310,7 @@ double OGRSpatialReference3D::GetValueAt(GDALDataset* hDataset, double x, double
     if( GDALInvGeoTransform( geotrans, inv_geotrans ) == 0 )
       throw std::exception( "inversion of geo transformation failed." );
 
+	//Calculate Raster coordinate
 	cout << "calc raster coord" << endl;
 	double dPixel = inv_geotrans[0]+ 
           + x * inv_geotrans[1] * RAD_TO_DEG
@@ -315,35 +320,99 @@ double OGRSpatialReference3D::GetValueAt(GDALDataset* hDataset, double x, double
           + x * inv_geotrans[4] * RAD_TO_DEG
           + y * inv_geotrans[5] * RAD_TO_DEG;
 
-	cout << " p,l : " << dPixel << " " << dLine << endl;
-	int px = (int)dPixel;
-	int py = (int)dLine;
-	cout << px << " " << py << endl;
+	cout << " pixel,line : " << dPixel << " " << dLine << endl;
+	int px = (int)floor(dPixel);
+	int py = (int)floor(dLine);
+	cout << " " << px << " " << py << endl;
+
+	// Boundary checking
 	if (px < 0 || py < 0 || px >= nXsize || py >= nYsize)
 	{
 		cout << "invalid raster coordinate";
 	}
 	else{
-		//this code assumes that the location has 4 neighbor support
-		//noData values are currently ignored --> TODO
+		// raster coordinate relative to nearest topleft pixel for weighting
+		double dx = dPixel - px;
+		double dy = dLine - py;
+
+		// ASSUMPTION : single band raster 
+		double dNoDataValue = hDataset->GetRasterBand(1)->GetNoDataValue();
+		cout << " no data:  " << dNoDataValue << endl;
+
+		// allocate array for height data
         double *padH = (double *) CPLMalloc(sizeof(double)*4);
+
+		// get 2x2 pixel neighborhood
 		hDataset->RasterIO( GF_Read, px, py, 2, 2, 
                           padH, 2, 2, GDT_Float64, 
                           1, NULL, 0, 0, 0 );
 
-		cout << padH[0] << " " << padH[1] << " " << padH[2] << " "<< padH[3]<< endl;
+		cout << " "<< padH[0] << " " << padH[1] << " " << padH[2] << " "<< padH[3]<< endl;
 
-		double dx = dPixel - px;
-		double dy = dLine - py;
+		double dWeight = 0.0;
+		double dSum = 0.0;
+		double dNorm = 0.0;
 
-		double zx_top = dx * padH[1] + (1.0 - dx) * padH[0];
-		double zx_bottom = dx * padH[3] + (1.0 - dx) * padH[2];
-		double z_interp = dy * zx_bottom + (1.0 - dy) * zx_top;
+		// Calculate contribution of each neighboring pixel
+		// weighted by inverse rectangular area
+		//
+		// tl----+------tr
+		// |     |      |
+		// |    dy      |
+		// |     |      |
+		// +--dx-+------+
+		// |     |      |
+		// bl----+------br
+		//
+		// possible extension: code below can be refactored
+		// by moving to separate function for computing
+		// specific interpolation scheme (e.g. kriging)
+		
+		if (fabs(padH[0] - dNoDataValue) > EPSILON)
+		{
+			// top left neighbor
+			dWeight = (1.0 - dx) * (1.0 - dy);
+			dSum += padH[0] * dWeight;
+			dNorm += dWeight;
+		}
+		
+		if (fabs(padH[1] - dNoDataValue) > EPSILON)
+		{
+			// top right neighbor
+			dWeight = dx * (1.0 - dy);
+			dSum += padH[1] * dWeight;
+			dNorm += dWeight;
+		}
+		
+		if (fabs(padH[2] - dNoDataValue) > EPSILON)
+		{
+			// bottom left neighbor
+			dWeight = (1.0 - dx) * (dy);
+			dSum += padH[2] * dWeight;
+			dNorm += dWeight;
+		}
+		
+		if (fabs(padH[3] - dNoDataValue) > EPSILON)
+		{
+			// bottom right neighbor
+			dWeight = (dx) * (dy);
+			dSum += padH[3] * dWeight;
+			dNorm += dWeight;
+		}
 
-		cout << "H " << z_interp << endl;
+		cout << "(Unnormalized) H_interp " << dSum << endl;
+
+		if(dNorm < EPSILON)  // No valid data available
+			dSum = 0.0; 
+		else if(dNorm < 1.0) // One or more pixels is no data
+			dSum /= dNorm;
+
+		cout << "Normalization factor " << dNorm << endl;
+		cout << "(Normalized) H_interp " << dSum << endl;
+		
 		CPLFree(padH);
 
-		return z_interp;
+		return dSum;
 	}
 
 	return 0.0;
