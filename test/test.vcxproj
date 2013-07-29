@@ -63,7 +63,7 @@
       </IgnoreAllDefaultLibraries>
     </Link>
     <PostBuildEvent>
-      <Command>copy ..\Spatialref3d\Spatialref3d.dll $(OutDir)</Command>
+      <Command>copy ..\Spatialref3d\Spatialref3d.dll $(OutDir) &amp;&amp; copy ..\gdal-1.10.0\distro\bin\gdal110.dll $(OutDir) &amp;&amp; copy ..\proj-4.8.0\distro\bin\proj.dll $(OutDir)</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
