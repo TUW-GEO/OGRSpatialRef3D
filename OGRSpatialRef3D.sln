@@ -7,6 +7,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj",
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "makegdal", "gdal-1.10.0\makegdal10.vcxproj", "{4B0D11B1-F067-421E-8A6C-A51A0FE1E90D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Spatialref3D", "Spatialref3D\Spatialref3D.vcxproj", "{08AE2AB0-958E-4612-AA24-4B192DFF82E2}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -25,6 +27,10 @@ Global
 		{4B0D11B1-F067-421E-8A6C-A51A0FE1E90D}.Debug|Win32.Build.0 = Debug|Win32
 		{4B0D11B1-F067-421E-8A6C-A51A0FE1E90D}.Release|Win32.ActiveCfg = Release|Win32
 		{4B0D11B1-F067-421E-8A6C-A51A0FE1E90D}.Release|Win32.Build.0 = Release|Win32
+		{08AE2AB0-958E-4612-AA24-4B192DFF82E2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{08AE2AB0-958E-4612-AA24-4B192DFF82E2}.Debug|Win32.Build.0 = Debug|Win32
+		{08AE2AB0-958E-4612-AA24-4B192DFF82E2}.Release|Win32.ActiveCfg = Release|Win32
+		{08AE2AB0-958E-4612-AA24-4B192DFF82E2}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

@@ -1,0 +1,491 @@
+﻿Build started 29/07/2013 13:11:52.
+     1>Project "D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\makegdal10.vcxproj" on node 2 (build target(s)).
+     1>Build:
+         cd D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ && nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 && nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 ProjectDir=D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ devinstall
+         
+         Microsoft (R) Program Maintenance Utility Version 10.00.30319.01
+         Copyright (C) Microsoft Corporation.  All rights reserved.
+         
+         	cd port
+         	nmake /nologo /f makefile.vc
+         	cd ..
+         	cd frmts/iso8211
+         	nmake /nologo /f makefile.vc
+         	lib /out:libiso8211.lib ddfmodule.obj ddfutils.obj ddffielddefn.obj ddfrecord.obj  ddffield.obj ddfsubfielddefn.obj
+         Microsoft (R) Library Manager Version 10.00.30319.01
+         Copyright (C) Microsoft Corporation.  All rights reserved.
+         
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         	cd ..\sdts
+         	nmake /nologo /f makefile.vc
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         	cd ..\..\ogr
+         	nmake /nologo /f makefile.vc ogr.lib frmts
+         'ogr.lib' is up-to-date
+         	cd ogrsf_frmts
+         	nmake /nologo /f makefile.vc
+         	for %d in ( generic geojson shape ntf sdts tiger s57 dgn mitab gml  avc rec mem vrt csv gmt bna kml gpx  geoconcept xplane georss gtm dxf pgdump gpsbabel  sua openair pds htf aeronavfaa edigeo svg idrisi arcgen  segukooa segy pdf          odbc pgeo mssqlspatial geomedia          pcidsk                ) do  cd %d  && nmake /nologo /f makefile.vc  && cd ..  || exit 1
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd generic   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd geojson   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	cd jsonc
+         	nmake /nologo /f makefile.vc
+         	cd ..
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd shape   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd ntf   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd sdts   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd tiger   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd s57   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd dgn   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd mitab   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd gml   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd avc   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd rec   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd mem   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd vrt   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd csv   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd gmt   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd bna   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd kml   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd gpx   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd geoconcept   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd xplane   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd georss   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd gtm   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd dxf   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd pgdump   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd gpsbabel   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd sua   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd openair   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd pds   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd htf   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd aeronavfaa   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd edigeo   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd svg   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd idrisi   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd arcgen   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd segukooa   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd segy   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd pdf   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd odbc   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd pgeo   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd mssqlspatial   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd geomedia   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\ogr\ogrsf_frmts>cd pcidsk   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	lib /out:ogrsf_frmts.lib generic\*.obj shape\*.obj ntf\*.obj  sdts\*.obj s57\*.obj tiger\*.obj gml\*.obj  mitab\*.obj dgn\*.obj avc\*.obj mem\*.obj  vrt\*.obj csv\*.obj rec\*.obj kml\*.obj  gmt\*.obj bna\*.obj geoconcept\*.obj  geojson\*.obj geojson\jsonc\*.obj  gpx\*.obj xplane\*.obj georss\*.obj gtm\*.obj  dxf\*.obj pgdump\*.obj gpsbabel\*.obj  sua\*.obj openair\*.obj pds\*.obj htf\*.obj  aeronavfaa\*.obj edigeo\*.obj svg\*.obj idrisi\*.obj  arcgen\*.obj segukooa\*.obj segy\*.obj pdf\*.obj   odbc\*.obj pgeo\*.obj mssqlspatial\*.obj geomedia\*.obj                 pcidsk\*.obj               
+         Microsoft (R) Library Manager Version 10.00.30319.01
+         Copyright (C) Microsoft Corporation.  All rights reserved.
+         
+         	lib /out:ogrsf_frmts_sup.lib  ..\..\frmts\iso8211\*.obj  ..\..\frmts\sdts\sdtsattrreader.obj  ..\..\frmts\sdts\sdtscatd.obj  ..\..\frmts\sdts\sdtsiref.obj  ..\..\frmts\sdts\sdtslib.obj  ..\..\frmts\sdts\sdtslinereader.obj  ..\..\frmts\sdts\sdtspointreader.obj  ..\..\frmts\sdts\sdtspolygonreader.obj  ..\..\frmts\sdts\sdtsrasterreader.obj  ..\..\frmts\sdts\sdtstransfer.obj  ..\..\frmts\sdts\sdtsindexedreader.obj  ..\..\frmts\sdts\sdtsxref.obj
+         Microsoft (R) Library Manager Version 10.00.30319.01
+         Copyright (C) Microsoft Corporation.  All rights reserved.
+         
+         	cd ..
+         	cd ..
+         	cd gcore
+         	nmake /nologo /f makefile.vc
+         	cd ..\alg
+         	nmake /nologo /f makefile.vc
+         	cd ..
+         	cd frmts
+         	nmake /nologo /f makefile.vc
+         	for %d in ( jpeg ceos aigrid elas hfa gtiff sdts raw gxf ceos2 png  dted mem jdem gif  envisat aaigrid usgsdem l1b  fit vrt xpm bmp rmf  nitf pcidsk airsar rs2  ilwis msgn rik pcraster  leveller sgi srtmhgt idrisi  jaxapalsar ers ingr dimap  gff terragen gsg cosar pds  adrg coasp tsx blx til  r northwood saga xyz hf2  kmlsuperoverlay ozi ctg e00grid  zmap ngsgeoid pdf iris map bsb zlib grib arg ) do  cd %d  && nmake /nologo /f makefile.vc  && cd ..  || exit 1
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd jpeg   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	cd libjpeg12
+         	nmake /nologo /f makefile.vc jcapimin12.c
+         'jcapimin12.c' is up-to-date
+         	cd ..
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         	cd libjpeg
+         	nmake /nologo /f makefile.vc
+         	lib /out:libjpeg.lib jcapimin.obj jcapistd.obj jccoefct.obj jccolor.obj jcdctmgr.obj jchuff.obj  jcinit.obj jcmainct.obj jcmarker.obj jcmaster.obj jcomapi.obj jcparam.obj  jcphuff.obj jcprepct.obj jcsample.obj jctrans.obj jdapimin.obj jdapistd.obj  jdatadst.obj jdatasrc.obj jdcoefct.obj jdcolor.obj jddctmgr.obj jdhuff.obj  jdinput.obj jdmainct.obj jdmarker.obj jdmaster.obj jdmerge.obj jdphuff.obj  jdpostct.obj jdsample.obj jdtrans.obj jerror.obj jfdctflt.obj jfdctfst.obj  jfdctint.obj jidctflt.obj jidctfst.obj jidctint.obj jidctred.obj jquant1.obj  jquant2.obj jutils.obj jmemmgr.obj jmemansi.obj
+         Microsoft (R) Library Manager Version 10.00.30319.01
+         Copyright (C) Microsoft Corporation.  All rights reserved.
+         
+         	xcopy /D  /Y *.obj ..\..\o
+         0 File(s) copied
+         	cd ..
+         	cd libjpeg12
+         	nmake /nologo /f makefile.vc
+         	xcopy /D  /Y *.obj ..\..\o
+         0 File(s) copied
+         	cd ..
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd ceos   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd aigrid   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd elas   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd hfa   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	for %I in (hfaband.obj hfadataset.obj hfadictionary.obj hfaentry.obj  hfafield.obj hfaopen.obj hfatype.obj hfacompress.obj  hfa_overviews.obj) do xcopy /D  /Y %I ..\o
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts\hfa>xcopy /D /Y hfaband.obj ..\o 
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts\hfa>xcopy /D /Y hfadataset.obj ..\o 
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts\hfa>xcopy /D /Y hfadictionary.obj ..\o 
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts\hfa>xcopy /D /Y hfaentry.obj ..\o 
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts\hfa>xcopy /D /Y hfafield.obj ..\o 
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts\hfa>xcopy /D /Y hfaopen.obj ..\o 
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts\hfa>xcopy /D /Y hfatype.obj ..\o 
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts\hfa>xcopy /D /Y hfacompress.obj ..\o 
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts\hfa>xcopy /D /Y hfa_overviews.obj ..\o 
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd gtiff   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	cd libtiff
+         	nmake /nologo /f makefile.vc
+         	cd ../../jpeg/libjpeg12
+         	nmake /nologo /f makefile.vc jcapimin12.c
+         'jcapimin12.c' is up-to-date
+         	cd ../../gtiff/libtiff
+         	xcopy /D  /Y *.obj ..\..\o
+         0 File(s) copied
+         	cd ..
+         	cd libgeotiff
+         	nmake /nologo /f makefile.vc
+         	xcopy /D  /Y *.obj ..\..\o
+         0 File(s) copied
+         	cd ..
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd sdts   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd raw   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd gxf   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd ceos2   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd png   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         	cd libpng
+         	nmake /nologo /f makefile.vc
+         	xcopy /D  /Y *.obj ..\..\o
+         0 File(s) copied
+         	cd ..
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd dted   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd mem   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd jdem   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd gif   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         	cd giflib
+         	nmake /nologo /f makefile.vc
+         	xcopy /D  /Y *.obj ..\..\o
+         0 File(s) copied
+         	cd ..
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd envisat   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd aaigrid   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd usgsdem   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd l1b   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd fit   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd vrt   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd xpm   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd bmp   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd rmf   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd nitf   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd pcidsk   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd airsar   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd rs2   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd ilwis   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd msgn   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd rik   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd pcraster   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj  ..\o
+         0 File(s) copied
+         	cd libcsf
+         	nmake /nologo /f makefile.vc
+         	xcopy /D  /Y *.obj ..\..\o
+         0 File(s) copied
+         	cd ..
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd leveller   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd sgi   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd srtmhgt   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd idrisi   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         	cd ..
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd jaxapalsar   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd ers   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd ingr   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         	cd ..
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd dimap   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd gff   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd terragen   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd gsg   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd cosar   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd pds   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd adrg   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd coasp   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd tsx   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd blx   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd til   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd r   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd northwood   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd saga   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd xyz   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd hf2   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd kmlsuperoverlay   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /y /r /d /f *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd ozi   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd ctg   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd e00grid   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd zmap   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd ngsgeoid   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd pdf   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd iris   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd map   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd bsb   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd zlib   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd grib   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	cd degrib18 && nmake /nologo /f makefile.vc && cd ..
+         	cd degrib && nmake /nologo /f makefile.vc && cd ..
+         	xcopy /D /Y *.obj ..\..\..\o
+         0 File(s) copied
+         	cd g2clib-1.0.4 && nmake /nologo /f makefile.vc && cd ..
+         	xcopy /D /Y *.obj ..\..\..\o
+         0 File(s) copied
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         
+         D:\work\google\soc2013\github\OGRSpatialRef3D\gdal-1.10.0\frmts>cd arg   && nmake /nologo /f makefile.vc   && cd ..   || exit 1 
+         	xcopy /D  /Y *.obj ..\o
+         0 File(s) copied
+         	cd ..
+         	if exist gdal.lib del gdal.lib
+         	lib /nologo /out:gdal.lib port\*.obj gcore\*.obj alg\*.obj frmts\o\*.obj ogr\ogrsf_frmts\ogrsf_frmts.lib ogr\ogr.lib 

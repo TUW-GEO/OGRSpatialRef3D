@@ -168,7 +168,7 @@ public:
 	OGRCoordinateTransformation3D();
 };
 
-OGRCoordinateTransformation3D CPL_DLL *
+CPL_DLL OGRCoordinateTransformation3D *
 OGRCreateCoordinateTransformation3D( OGRSpatialReference3D *poSource,
                                    OGRSpatialReference3D *poTarget );
 

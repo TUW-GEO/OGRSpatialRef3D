@@ -36,8 +36,8 @@
     <_ProjectFileVersion>10.0.21006.1</_ProjectFileVersion>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</OutDir>
     <IntDir Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(Configuration)\</IntDir>
-    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd $(ProjectDir) &amp;&amp; nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 &amp;&amp; nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 devinstall</NMakeBuildCommandLine>
-    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd $(ProjectDir) &amp;&amp; nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 clean &amp;&amp; nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 &amp;&amp; nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 devinstall</NMakeReBuildCommandLine>
+    <NMakeBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd $(ProjectDir) &amp;&amp; nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 &amp;&amp; nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 ProjectDir=$(ProjectDir) devinstall</NMakeBuildCommandLine>
+    <NMakeReBuildCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd $(ProjectDir) &amp;&amp; nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 clean &amp;&amp; nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 &amp;&amp; nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 ProjectDir=$(ProjectDir) devinstall</NMakeReBuildCommandLine>
     <NMakeCleanCommandLine Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">cd $(ProjectDir) &amp;&amp; nmake -f makefile.vc MSVC_VER=1500 DEBUG=1 clean</NMakeCleanCommandLine>
     <NMakeOutput Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">gdal17.dll</NMakeOutput>
     <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(Configuration)\</OutDir>

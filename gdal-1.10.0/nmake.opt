@@ -51,7 +51,8 @@ MSVC_VER=1500
 # But the paths *should* be absolute (relative paths mess up in submakefiles).
 
 !IFNDEF GDAL_HOME
-GDAL_HOME = C:\GDAL
+GDAL_HOME = $(ProjectDir)distro
+#C:\GDAL
 !ENDIF
 !IFNDEF BINDIR
 BINDIR = $(GDAL_HOME)\bin

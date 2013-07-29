@@ -30,9 +30,9 @@
 
 #include <vector>
 #include "ogr_spatialref3D.h"
-#include "..\gcore\gdal.h"
-#include "..\alg\gdalwarper.h"
-#include "..\gcore\gdal_priv.h"
+#include "gdal.h"
+#include "gdalwarper.h"
+#include "gdal_priv.h"
 
 #define RAD_TO_DEG	57.29577951308232
 #define DEG_TO_RAD	.0174532925199432958
@@ -162,7 +162,7 @@ static int BilinearResampling( float *pf_grid, unsigned char *pi_mask,
 OGRSpatialReference3D::OGRSpatialReference3D()
 {
 	GDALAllRegister();
-
+	
 	bHasGeoid = false;
 	bHasVCorr = false;
 
@@ -287,9 +287,9 @@ OGRErr OGRSpatialReference3D::ApplyVerticalCorrection(int is_inverse, unsigned i
 
 		double dCorrection = (z_geoid + z_vcorr + dfVOffset_);
 		if(is_inverse)
-			z[i] += dCorrection;
-		else
 			z[i] -= dCorrection;
+		else
+			z[i] += dCorrection;
 	}
 	return OGRERR_NONE;
 }

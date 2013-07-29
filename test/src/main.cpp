@@ -81,11 +81,36 @@ int main(int argc, char* argv[])
 		delete [] cstr;
 	}
 
+	const OGR_SRSNode *poGEOID = oSourceSRS.GetAttrNode( "GEOID" );
+	if (poGEOID != NULL){
+		const char *pszGEOID = poGEOID->GetChild(1)->GetChild(0)->GetValue();
+		std::cout << "Loading source GEOID : " << pszGEOID << std::endl;
+		oSourceSRS.SetGeoidModel(pszGEOID);
+	}
+	else{
+		std::cout << "NO GEOID in SOURCE" << std::endl;
+	}
+
+	poGEOID = oTargetSRS.GetAttrNode( "GEOID" );
+	if (poGEOID != NULL){
+		const char *pszGEOID = poGEOID->GetChild(1)->GetChild(0)->GetValue();
+		std::cout << "Loading target GEOID : " << pszGEOID << std::endl;
+		oTargetSRS.SetGeoidModel(pszGEOID);
+	}
+	else{
+		std::cout << "NO GEOID in TARGET" << std::endl;
+	}
+
 	CPLSetConfigOption("GDAL_DATA", options["gdal_data"].c_str());
 	if(options["input_file"].length() == 0){
 		cerr << "no data FILE given" << endl;
 		exit(1);
 	}
+
+	OGRCoordinateTransformation3D *poCT = OGRCreateCoordinateTransformation3D( &oSourceSRS,
+                                               &oTargetSRS );
+	
+	cout << "coordinate transform created" << endl;
 
 	ifstream inFile;
 	inFile.open(options["input_file"], ios::in);
@@ -97,10 +122,7 @@ int main(int argc, char* argv[])
 		cout << "reading file " << options["input_file"] << endl;
 	}
 
-
-	OGRCoordinateTransformation3D *poCT = OGRCreateCoordinateTransformation3D( &oSourceSRS,
-                                               &oTargetSRS );
-
+	
 	string line="";
 	while(!inFile.eof()){
 		getline(inFile, line);

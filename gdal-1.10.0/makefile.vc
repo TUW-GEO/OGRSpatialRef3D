@@ -47,10 +47,10 @@ BASE_INCLUDE =	/INCLUDE:_GDALSimpleImageWarp@36 \
 		/INCLUDE:_GDALReprojectImage@48 \
 		/INCLUDE:_GDALComputeMedianCutPCT@32 \
 		/INCLUDE:_GDALDitherRGB2PCT@28 \
-        /INCLUDE:??0OGRSpatialReference3D@@QAE@XZ \
-		/INCLUDE:??1OGRSpatialReference3D@@UAE@XZ \
-		/INCLUDE:??_GOGRSpatialReference3D@@UAEPAXI@Z \
-		/INCLUDE:_OCTNewCoordinateTransformation@8 $(VB6_SAFEARRAYSYM)
+#      /INCLUDE:??0OGRSpatialReference3D@@QAE@XZ \
+#		/INCLUDE:??1OGRSpatialReference3D@@UAE@XZ \
+#		/INCLUDE:??_GOGRSpatialReference3D@@UAEPAXI@Z \
+#		/INCLUDE:_OCTNewCoordinateTransformation@8 $(VB6_SAFEARRAYSYM)
 !ELSE
 BASE_INCLUDE =	/INCLUDE:$(SYM_PREFIX)GDALSimpleImageWarp \
 		/INCLUDE:$(SYM_PREFIX)GDALReprojectImage \
@@ -128,11 +128,11 @@ frmts_dir:
 
 plugin_dir:
 	cd frmts
-	$(MAKE) /f makefile.vc plugindirs
+	$(MAKE) /f makefile.vc
 	cd ..
 !IFDEF INCLUDE_OGR_FRMTS
 	cd ogr\ogrsf_frmts
-	$(MAKE) /f makefile.vc plugindirs
+	$(MAKE) /f makefile.vc
 	cd ..\..
 !ENDIF
 
@@ -178,26 +178,26 @@ install: $(GDAL_DLL) plugin_dir apps_dir
 	-mkdir $(DATADIR)
 	$(INSTALL) $(GDAL_DLL) $(BINDIR)
 	cd frmts
-	$(MAKE) /f makefile.vc plugins-install
+	$(MAKE) /f makefile.vc  ProjectDir=$(ProjectDir) plugins-install
 	cd ..\apps
-	$(MAKE) /f makefile.vc install
+	$(MAKE) /f makefile.vc  ProjectDir=$(ProjectDir) install
 	cd ..
 	$(INSTALL) data\*.* $(DATADIR)
 	$(INSTALL) LICENSE.TXT $(DATADIR)
 !IFDEF HTMLDIR
 	-mkdir $(HTMLDIR)
 	cd frmts
-	$(MAKE) /f makefile.vc html-install
+	$(MAKE) /f makefile.vc  ProjectDir=$(ProjectDir) html-install
 	cd ..
 !ENDIF
 !IFDEF INCLUDE_OGR_FRMTS
 	cd ogr
-	$(MAKE) /f makefile.vc install
+	$(MAKE) /f makefile.vc  ProjectDir=$(ProjectDir) install
 	cd ..
 	cd ogr\ogrsf_frmts
-	$(MAKE) /f makefile.vc plugins-install
+	$(MAKE) /f makefile.vc  ProjectDir=$(ProjectDir) plugins-install
 !IFDEF HTMLDIR
-	$(MAKE) /f makefile.vc html-install
+	$(MAKE) /f makefile.vc  ProjectDir=$(ProjectDir) html-install
 !ENDIF
 	cd ..\..
 !ENDIF
