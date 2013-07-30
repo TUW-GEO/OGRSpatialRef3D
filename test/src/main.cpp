@@ -1,4 +1,3 @@
-//#include <stdio.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -146,78 +145,5 @@ int main(int argc, char* argv[])
 			printf( "(%f,%f,%f) -> (%f,%f,%f)\n", sourcex, sourcey, sourcez, targetx, targety, targetz );
 	}
 
-	/*
-  if(argc==4){
-	OGRSpatialReference oSourceSRS1, oTargetSRS1;
-	oSourceSRS1.importFromWkt(&(argv[2]));
-	oTargetSRS1.importFromWkt(&(argv[3]));
-	OGRCoordinateTransformation *poCT = OGRCreateCoordinateTransformation( &oSourceSRS1, &oTargetSRS1 );
-
-	ifstream inFile;
-	inFile.open(argv[1], ios::in);
-	if (!inFile) {
-	  cerr << "Can't open input file " << argv[1] << endl;
-	  exit(1);
-	}
-
-	string line="";
-	
-	while(!inFile.eof()){
-		getline(inFile, line);
-		stringstream ss(line);
-
-		double sourcex = 0.0;  
-		double sourcey = 0.0;
-		double sourcez = 0.0;
-
-		ss >> sourcex >> sourcey >> sourcez;
-
-		double targetx = sourcex;
-		double targety = sourcey;
-		double targetz = sourcez;
-
-		//do actual transformation
-		if( poCT == NULL || !poCT->Transform( 1, &targetx, &targety ,&targetz) )
-			printf( "Transformation failed.\n" );
-		else
-			printf( "(%f,%f,%f) -> (%f,%f,%f)\n", sourcex, sourcey, sourcez, targetx, targety, targetz );
-	}
-		
-  }
-  else{
-	  cout << "test" << endl;
-	  OGRSpatialReference3D oSourceSRS, oTargetSRS;
-	OGRCoordinateTransformation3D *poCT1;
-  //init coordinate system from epsg code
-	oSourceSRS.importFromEPSG( 31491 );	
-	oTargetSRS.importFromEPSG( 31492 );
-
-  //oSourceSRS.SetGeoidModel("geoid.tif");	//set geoid
-  //oSourceSRS.SetVCorrModel("vcorr.tif");	//set vertical correction model
-
-  //oSourceSRS.SetVScale(0.15); //setting vertical scale
-  //oSourceSRS.SetVOffset(100); 
-
-	//create coordinate transformation object
-  poCT1 = OGRCreateCoordinateTransformation3D( &oSourceSRS,
-                                               &oTargetSRS );
-
-
-	double sourcex = 35.630;
-	double sourcey = 47.950;
-	double sourcez = 0;
-            
-  double targetx = sourcex;
-  double targety = sourcey;
-  double targetz = sourcez;
- 
-	//do actual transformation
-  if( poCT1 == NULL || !poCT1->Transform( 1, &targetx, &targety ,&targetz) )
-      printf( "Transformation failed.\n" );
-  else
-      printf( "(%f,%f,%f) -> (%f,%f,%f)\n", sourcex, sourcey, sourcez, targetx, targety, targetz );
-  }
-	std::cout << std::endl << "Press <Enter> to end program" << std::endl;
-  std::cin.get();
-  */
+	return 0;
 }
