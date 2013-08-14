@@ -79,8 +79,9 @@ OGRSpatialReference3D::OGRSpatialReference3D(const char * pszWKT,
                           double dfVOffset,
                           double dfVScale)
 {
-	char *str = new char[strlen(pszWKT)+1];
-	strcpy(str, pszWKT);
+	int slen = strlen(pszWKT)+1;
+	char *str = new char[slen];
+	CPLStrlcpy(str, pszWKT, slen);
 	if(OGRERR_NONE != importFromWkt(&(str)))
 	{
 		//handle for import error
@@ -139,7 +140,12 @@ double OGRSpatialReference3D::GetVScale ()
 
 OGRErr OGRSpatialReference3D::SetGeoidModel( const char * pszGeoidModel )
 {
-	poGeoid = (GDALDataset *) GDALOpen( pszGeoidModel, GA_ReadOnly );
+	if(poGeoid != NULL)
+		delete poGeoid;
+
+	poGeoid = new RasterResampler();
+	poGeoid->Open( pszGeoidModel );
+	//poGeoid = (GDALDataset *) GDALOpen( pszGeoidModel, GA_ReadOnly );
 	
 	if( poGeoid == NULL )
     {
@@ -153,7 +159,12 @@ OGRErr OGRSpatialReference3D::SetGeoidModel( const char * pszGeoidModel )
 
 OGRErr OGRSpatialReference3D::SetVCorrModel( const char * pszVCorrModel )
 {
-	poVCorr = (GDALDataset *) GDALOpen( pszVCorrModel, GA_ReadOnly );
+	//poVCorr = (GDALDataset *) GDALOpen( pszVCorrModel, GA_ReadOnly );
+	if(poVCorr != NULL)
+		delete poVCorr;
+
+	poVCorr = new RasterResampler();
+	poVCorr->Open( pszVCorrModel );
 
 	if( poVCorr == NULL )
     {
@@ -167,31 +178,46 @@ OGRErr OGRSpatialReference3D::SetVCorrModel( const char * pszVCorrModel )
 
 OGRErr OGRSpatialReference3D::ApplyVerticalCorrection(int is_inverse, unsigned int point_count, double *x, double *y, double *z)
 {
+	double* dZCorr = (double*)CPLMalloc(sizeof(double)*point_count);
+	double* dZTemp = (double*)CPLMalloc(sizeof(double)*point_count);
+
+	for(unsigned int i=0; i<point_count; ++i){ 
+		dZCorr[i] = dfVOffset_;
+		dZTemp[i] = 0.0;
+	}
+
+	if(HasGeoidModel()){
+		poGeoid->GetValueAt(point_count, x, y, dZTemp);
+		for(unsigned int i=0; i<point_count; ++i)
+			dZCorr[i] += dZTemp[i];
+	}
+
+	if(HasVCorrModel()){
+		poVCorr->GetValueAt(point_count, x, y, dZTemp);
+		for(unsigned int i=0; i<point_count; ++i)
+			dZCorr[i] += dZTemp[i];
+	}
+
 	for(unsigned int i=0; i<point_count; ++i)
 	{
 		cout << "XYZ : " << x[i] << " " << y[i] << " " << z[i] << endl;
-		double z_geoid = 0.0;
-		double z_vcorr = 0.0;
-
-		if(HasGeoidModel()){
-			z_geoid = GetValueAt(poGeoid, x[i], y[i]);
-		}
-
-		if(HasVCorrModel()){
-			z_vcorr = GetValueAt(poVCorr, x[i], y[i]);
-		}
-
-		double dCorrection = (z_geoid + z_vcorr + dfVOffset_);
 		if(is_inverse)
-			z[i] -= dCorrection;
+			z[i] -= dZCorr[i];
 		else
-			z[i] += dCorrection;
+			z[i] += dZCorr[i];
 	}
+
+	CPLFree(dZCorr);
+	CPLFree(dZTemp);
+
 	return OGRERR_NONE;
 }
 
 double OGRSpatialReference3D::GetValueAt(GDALDataset* hDataset, double x, double y)
 {
+	/*
+	 * Deprecated (no longer in use)
+	 */
 	cout << "get raster size" << endl;
 	int nXsize = hDataset->GetRasterXSize();
     int nYsize = hDataset->GetRasterYSize();

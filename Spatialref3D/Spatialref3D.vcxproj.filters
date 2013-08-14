@@ -21,9 +21,15 @@
     <ClCompile Include="src\ogrspatialreference3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="res_manager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogr_spatialref3D.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\res_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -61,8 +61,9 @@ int main(int argc, char* argv[])
 		//cout << wkt1 << endl;
 	}
 	else{
-		char *cstr = new char[options["src_wkt"].length() + 1];
-		strcpy(cstr, options["src_wkt"].c_str());
+		int slen = options["src_wkt"].length() + 1;
+		char *cstr = new char[slen];
+		CPLStrlcpy(cstr, options["src_wkt"].c_str(), slen);
 		oSourceSRS.importFromWkt(&(cstr));
 		delete [] cstr;
 	}
@@ -74,8 +75,9 @@ int main(int argc, char* argv[])
 		//cout << wkt2 << endl;
 	}
 	else{
-		char *cstr = new char[options["dst_wkt"].length() + 1];
-		strcpy(cstr, options["dst_wkt"].c_str());
+		int slen = options["dst_wkt"].length() + 1;
+		char *cstr = new char[slen];
+		CPLStrlcpy(cstr, options["dst_wkt"].c_str(), slen);
 		oTargetSRS.importFromWkt(&(cstr));
 		delete [] cstr;
 	}
@@ -144,6 +146,9 @@ int main(int argc, char* argv[])
 		else
 			printf( "(%f,%f,%f) -> (%f,%f,%f)\n", sourcex, sourcey, sourcez, targetx, targety, targetz );
 	}
+
+	cout << "Press ENTER to exit.";
+	cin.get();
 
 	return 0;
 }

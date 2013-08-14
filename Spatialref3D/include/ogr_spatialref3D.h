@@ -32,7 +32,7 @@
 
 #include "gdal_priv.h"
 #include "ogr_spatialref.h"
-
+#include "res_manager.h"
 
 /************************************************************************/
 /*                         OGRSpatialReference3D                        */
@@ -62,8 +62,8 @@ class CPL_DLL OGRSpatialReference3D:public OGRSpatialReference
 	double dfVOffset_;
 	double dfVScale_;
 
-	GDALDataset  *poGeoid;
-	GDALDataset  *poVCorr;
+	RasterResampler  *poGeoid;
+	RasterResampler  *poVCorr;
 public:
 	OGRSpatialReference3D();
 	OGRSpatialReference3D(const char * pszWKT,

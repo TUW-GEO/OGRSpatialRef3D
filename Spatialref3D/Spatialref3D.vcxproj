@@ -79,11 +79,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="res_manager.cpp" />
     <ClCompile Include="src\ct3D.cpp" />
     <ClCompile Include="src\ogrspatialreference3D.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="include\ogr_spatialref3D.h" />
+    <ClInclude Include="include\res_manager.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
