@@ -1,23 +1,23 @@
 #include "res_manager.h"
 #include "cpl_port.h"
+#include "interpolation.h"
 
 #define RAD_TO_DEG	57.29577951308232
-#define EPSILON 1e-5
 #define MAXINT 9999999
 #define MAXEXTENT 1024		// maximum window size
 
 #define INSIDE(x,y,l,t,w,h) (x>=l && x<=l+w && y>=t && y<=t+h)
 
-RasterResampler::RasterResampler() : bIsSmall(false)
+RasterResampler::RasterResampler() : bIsSmall(false), 
+									nRasterWidth(0), 
+									nRasterHeight(0),
+									nWndXOffset(0),
+									nWndYOffset(0),
+									nWndWidth(0),
+									nWndHeight(0)
 {
 	padWindow = NULL;
 	poData = NULL;
-	
-	nRasterWidth = 0;
-	nRasterHeight = 0;
-
-	nWndXOffset = 0;
-
 }
 
 RasterResampler::~RasterResampler()
@@ -91,6 +91,8 @@ void
 	if (bIsSmall || (dWidth < MAXEXTENT && dHeight < MAXEXTENT)){
 		// do it in single patch
 		// use naive approach embedded in single point interface
+
+		// TODO: add checking to window boundary against raster boundary
 		Request((int)dXMin, (int)dYMin, (int)dWidth+2, (int)dHeight+2);
 
 		for(int i=0; i<point_count; ++i){
@@ -124,7 +126,7 @@ void
 				}
 			}
 
-			// process all points
+			// process all applicable points
 			for(int i=0; i<point_count; ++i){
 				// skip processed points or points outside current cache window
 				if(panIdx[i]
@@ -135,9 +137,6 @@ void
 				panIdx[i] = true;	// mark processed
 				unprocessed_count += 1;
 			}
-
-			CPLFree(padWindow);
-			padWindow = NULL;
 		}// endwhile
 		
 		CPLFree(panIdx);
@@ -170,7 +169,6 @@ const char*
 	return sFilename;
 }
 
-
 double
 	RasterResampler::GetValueResampled(double x, double y)
 /*
@@ -187,74 +185,18 @@ double
 		double dx = x - px;
 		double dy = y - py;
 
+		// TODO: accomodate neigbor acquisition as required by other interpolation function (e.g. bicubic)
 		// acquire neighbors
 		int offset = (py-nWndYOffset)*nWndWidth+(px-nWndXOffset);
-		double tl = padWindow[offset];
-		double tr = padWindow[offset+1];
+		double p[4];
+		p[0] = padWindow[offset];
+		p[1] = padWindow[offset+1];
 
 		offset += nWndWidth;
-		double bl = padWindow[offset];
-		double br = padWindow[offset+1];
+		p[2] = padWindow[offset];
+		p[3] = padWindow[offset+1];
 
-		double dWeight = 0.0;
-		double dSum = 0.0;
-		double dNorm = 0.0;
-
-		// Calculate contribution of each neighboring pixel
-		// weighted by inverse rectangular area
-		//
-		// tl----+------tr
-		// |     |      |
-		// |    dy      |
-		// |     |      |
-		// +--dx-+------+
-		// |     |      |
-		// bl----+------br
-		//
-		// possible extension: code below can be refactored
-		// by moving to separate function for computing
-		// specific interpolation scheme (e.g. kriging)
-		
-		if (fabs(tl - dNoDataValue) > EPSILON)
-		{
-			// top left neighbor
-			dWeight = (1.0 - dx) * (1.0 - dy);
-			dSum += tl * dWeight;
-			dNorm += dWeight;
-		}
-		
-		if (fabs(tr - dNoDataValue) > EPSILON)
-		{
-			// top right neighbor
-			dWeight = dx * (1.0 - dy);
-			dSum += tr * dWeight;
-			dNorm += dWeight;
-		}
-		
-		if (fabs(bl - dNoDataValue) > EPSILON)
-		{
-			// bottom left neighbor
-			dWeight = (1.0 - dx) * (dy);
-			dSum += bl * dWeight;
-			dNorm += dWeight;
-		}
-		
-		if (fabs(br - dNoDataValue) > EPSILON)
-		{
-			// bottom right neighbor
-			dWeight = (dx) * (dy);
-			dSum += br * dWeight;
-			dNorm += dWeight;
-		}
-
-		//cout << "(Unnormalized) H_interp " << dSum << endl;
-
-		if(dNorm < EPSILON)  // No valid data available
-			dSum = 0.0; 
-		else if(dNorm < 1.0) // One or more pixels is no data
-			dSum /= dNorm;
-
-		return dSum;
+		return bilinearInterpolation(p, dx, dy, dNoDataValue);
 	}
 
 	return 0.0;
@@ -265,10 +207,14 @@ void
 {
 	if(padWindow != NULL)
 		CPLFree(padWindow);
+	padWindow = NULL;
 }
 
 void
 	RasterResampler::Prepare()
+	/*
+	 * get metadata information from raster file
+	 */
 {
 	nRasterWidth = poData->GetRasterXSize();
     nRasterHeight = poData->GetRasterYSize();
@@ -284,14 +230,16 @@ void
 
 void
 	RasterResampler::Request(int left, int top, int width, int height)
+	/*
+	 * Access pixel data from raster file to temporary buffer (padWindow)
+	 */
 {
 	nWndXOffset = left;
 	nWndYOffset = top;
 	nWndWidth = width;
 	nWndHeight = height;
 	
-	if(padWindow != NULL)
-		CPLFree(padWindow);
+	Cleanup();
 
 	int nWndArea = width*height;
 	padWindow = (double *) CPLMalloc(sizeof(double)*nWndArea);
@@ -304,6 +252,9 @@ void
 
 void 
 	RasterResampler::MapToRaster(double *x, double *y)
+	/* 
+	 * converts map coordinate (radian) to raster coordinate (pixels)
+	 */
 {
 	*(x) = dInvGeotrans[0]+ 
           + *(x) * dInvGeotrans[1] * RAD_TO_DEG

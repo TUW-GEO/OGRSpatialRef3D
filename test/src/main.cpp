@@ -57,8 +57,8 @@ int main(int argc, char* argv[])
 	if(options["src_coord"].length() != 0){
 		char *wkt1 = loadWktFile(options["src_coord"].c_str());
 		oSourceSRS.importFromWkt(&(wkt1));
-		//oSourceSRS.exportToProj4(&(wkt1));
-		//cout << wkt1 << endl;
+		oSourceSRS.exportToProj4(&(wkt1));
+		cout << wkt1 << endl;
 	}
 	else{
 		int slen = options["src_wkt"].length() + 1;
@@ -71,8 +71,8 @@ int main(int argc, char* argv[])
 	if(options["dst_coord"].length() != 0){
 		char *wkt2 = loadWktFile(options["dst_coord"].c_str());
 		oTargetSRS.importFromWkt(&(wkt2));
-		//oTargetSRS.exportToProj4(&(wkt2));
-		//cout << wkt2 << endl;
+		oTargetSRS.exportToProj4(&(wkt2));
+		cout << wkt2 << endl;
 	}
 	else{
 		int slen = options["dst_wkt"].length() + 1;
