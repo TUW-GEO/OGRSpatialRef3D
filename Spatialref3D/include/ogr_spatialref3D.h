@@ -62,16 +62,17 @@ class CPL_DLL OGRSpatialReference3D:public OGRSpatialReference
 	double dfVOffset_;
 	double dfVScale_;
 
+	bool is_debug;
+	double *dbg_geoid;
+	double *dbg_vcorr;
+
 	RasterResampler  *poGeoid;
 	RasterResampler  *poVCorr;
 public:
 	OGRSpatialReference3D();
-	OGRSpatialReference3D(const char * pszWKT,
-                          const char * pszGeoidModel,
-                          const char * pszVCorrModel,
-                          double dfVOffset,
-                          double dfVScale);
-	 virtual    ~OGRSpatialReference3D();
+	virtual    ~OGRSpatialReference3D();
+
+	OGRErr      importFromWkt3D( char ** pszWKT );
 
  	OGRErr SetGeoidModel( const char * pszGeoidModel );
     const char * GetGeoidModel ();
@@ -89,6 +90,8 @@ public:
 	bool HasVCorrModel();
 
 	OGRErr ApplyVerticalCorrection(int is_inverse, unsigned int point_count, double *x, double *y, double *z);
+	void SetDebug(bool debug_mode);
+	void SetDebugData(double *geoid_undulation, double *vert_correction);
 
 protected:
 	double GetValueAt(GDALDataset* hDataset, double x, double y);

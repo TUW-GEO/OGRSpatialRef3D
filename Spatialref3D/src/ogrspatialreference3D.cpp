@@ -67,26 +67,28 @@ OGRSpatialReference3D::OGRSpatialReference3D()
 
 	dfVOffset_ = 0.0;
 	dfVScale_ = 0.0;
+
+	is_debug = false;
+	dbg_geoid = NULL;
+	dbg_vcorr = NULL;
 }
 
 OGRSpatialReference3D::~OGRSpatialReference3D()
 {
 }
 
-OGRSpatialReference3D::OGRSpatialReference3D(const char * pszWKT,
-                          const char * pszGeoidModel,
-                          const char * pszVCorrModel,
-                          double dfVOffset,
-                          double dfVScale)
+OGRErr      
+	OGRSpatialReference3D::importFromWkt3D( char ** pszWKT)
 {
-	int slen = strlen(pszWKT)+1;
-	char *str = new char[slen];
-	CPLStrlcpy(str, pszWKT, slen);
-	if(OGRERR_NONE != importFromWkt(&(str)))
+	//int slen = strlen(*pszWKT)+1;
+	//char *str = new char[slen];
+	//CPLStrlcpy(str, *pszWKT, slen);
+	if(OGRERR_NONE != importFromWkt(pszWKT))
 	{
 		//handle for import error
+		std::cout << "Error import WKT3D : " << std::endl;
 	}
-	delete[] str;
+	//delete[] str;
 
 	const OGR_SRSNode *poNode = GetAttrNode( "GEOID" );
 	if (poNode != NULL){
@@ -95,7 +97,13 @@ OGRSpatialReference3D::OGRSpatialReference3D(const char * pszWKT,
 		if(OGRERR_NONE != SetGeoidModel(pszData))
 		{
 			//handle for loading error
+			std::cout << "Error Loading GEOID : " << pszData << std::endl;
+			throw OGRERR_FAILURE;
 		}
+	}
+	else
+	{
+		std::cout << "no GEOID" << std::endl;
 	}
 
 	poNode = GetAttrNode( "VCORR" );
@@ -105,14 +113,36 @@ OGRSpatialReference3D::OGRSpatialReference3D(const char * pszWKT,
 		if(OGRERR_NONE != SetVCorrModel(pszData))
 		{
 			//handle for loading error
+			std::cout << "Error Loading VCORR : " << pszData << std::endl;
+			throw OGRERR_FAILURE;
 		}
 	}
+	else
+	{
+		std::cout << "no VCORR" << std::endl;
+	}
 
-	//let's ignore these
-	//SetGeoidModel( pszGeoidModel );
-	//SetVCorrModel( pszVCorrModel );
-	SetVOffset( dfVOffset );
-	SetVScale( dfVScale );
+	poNode = GetAttrNode( "VSHIFT" );
+	if (poNode != NULL){
+		const char *pszData = poNode->GetChild(0)->GetValue();
+		std::cout << "Loading VSHIFT : " << pszData << std::endl;
+		SetVOffset(atof(pszData));
+	}
+	else
+	{
+		std::cout << "no VSHIFT" << std::endl;
+	}
+
+	poNode = GetAttrNode( "VSCALE" );
+	if (poNode != NULL){
+		const char *pszData = poNode->GetChild(0)->GetValue();
+		std::cout << "Loading VSCALE : " << pszData << std::endl;
+		SetVScale(atof(pszData));
+	}
+	else
+	{
+		std::cout << "no VSCALE" << std::endl;
+	}
 }
 
 OGRErr OGRSpatialReference3D::SetVOffset( double  dfVOffset )
@@ -188,14 +218,22 @@ OGRErr OGRSpatialReference3D::ApplyVerticalCorrection(int is_inverse, unsigned i
 
 	if(HasGeoidModel()){
 		poGeoid->GetValueAt(point_count, x, y, dZTemp);
-		for(unsigned int i=0; i<point_count; ++i)
+		for(unsigned int i=0; i<point_count; ++i){
 			dZCorr[i] += dZTemp[i];
+			if(is_debug && dbg_geoid != NULL){
+				dbg_geoid[i] = dZTemp[i];
+			}
+		}
 	}
 
 	if(HasVCorrModel()){
 		poVCorr->GetValueAt(point_count, x, y, dZTemp);
-		for(unsigned int i=0; i<point_count; ++i)
+		for(unsigned int i=0; i<point_count; ++i){
 			dZCorr[i] += dZTemp[i];
+			if(is_debug && dbg_vcorr != NULL){
+				dbg_vcorr[i] = dZTemp[i];
+			}
+		}
 	}
 
 	for(unsigned int i=0; i<point_count; ++i)
@@ -354,9 +392,21 @@ bool OGRSpatialReference3D::HasVCorrModel ()
 	return bHasVCorr;
 }
 
+void OGRSpatialReference3D::SetDebug(bool debug_mode)
+{
+	is_debug = debug_mode;
+}
+
+void OGRSpatialReference3D::SetDebugData(double* geoid_undulation, double* vert_correction)
+{
+	dbg_geoid = geoid_undulation;
+	dbg_vcorr = vert_correction;
+}
+
 
 CPL_DLL OGRCoordinateTransformation3D::OGRCoordinateTransformation3D()
 {
 
 }
+
 

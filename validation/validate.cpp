@@ -10,6 +10,41 @@
 
 #define MAX_DATA 10000
 
+class SummStat
+{
+public:
+	double min;
+	double max;
+	double sum;
+	double ssq;
+	int n;
+	SummStat() : min(HUGE_VAL), max(-HUGE_VAL), sum(0.0), ssq(0.0), n(0) {}
+	void add(double value);
+	void printout(int shortprec=8, int longprec=18);
+};
+
+void
+SummStat::add(double value)
+{
+	n += 1;
+	min = MIN(min, value);
+	max = MAX(max, value);
+	sum += value;
+	ssq += value*value;
+}
+
+void
+	SummStat::printout(int shortprec, int longprec)
+{
+	std::cout << std::setprecision(shortprec);
+	std::cout << "\tmin : " << min << std::endl; 
+	std::cout << "\tmax : " << max << std::endl; 
+	std::cout << "\tavg : " << sum / (double)n << std::endl; 
+	std::cout << std::setprecision(longprec);
+	std::cout << "\tvar : " << ((double)n*ssq - sum*sum) / (double)(n*(n-1)) << std::endl; 
+}
+
+
 //given values
 double x_etrs[MAX_DATA];
 double y_etrs[MAX_DATA];
@@ -58,7 +93,7 @@ char buffer[1024];
 #define GEOG_MGI_ORTH "etrs89_ortho.prj" //orthometric height
 
 #define PROJ_MGI_ORTH "gk-m34_orthoH.prj" //orthometric height
-#define PROJ_MGI_USEH "mgi_gk_ortho.prj" //orthometric height
+#define PROJ_MGI_USEH "gk-m34_orthoH_WienerNull.prj" //orthometric height
 
 char *loadWktFile(const char* sWktFilename){
 	ifstream inFile;
@@ -124,53 +159,21 @@ void geog_etrs_ellh_to_geog_mgi_ellh()
 	else
 	{
 		printf( "Transformation successful.\n" );
-		double err_min0 = HUGE_VAL;
-		double err_max0 = -HUGE_VAL;
-		double err_sum0 = 0.0;
-		double err_ssq0 = 0.0;
-
-		double err_min1 = HUGE_VAL;
-		double err_max1 = -HUGE_VAL;
-		double err_sum1 = 0.0;
-		double err_ssq1 = 0.0;
-
-		double err_min2 = HUGE_VAL;
-		double err_max2 = -HUGE_VAL;
-		double err_sum2 = 0.0;
-		double err_ssq2 = 0.0;
+		SummStat err0, err1;
 
 		for(int row_number=0; row_number < num_data; row_number++)
 		{
-			double err0 = fabs(r0[row_number]-lat_mgi[row_number]);
-			double err1 = fabs(r1[row_number]-lon_mgi[row_number]);
-
-			err_min0 = MIN(err_min0, err0);
-			err_max0 = MAX(err_max0, err0);
-			err_sum0 += err0;
-			err_ssq0 += err0*err0;
-
-			err_min1 = MIN(err_min1, err1);
-			err_max1 = MAX(err_max1, err1);
-			err_sum1 += err1;
-			err_ssq1 += err1*err1;
+			err0.add(fabs(r0[row_number]-lat_mgi[row_number]));
+			err1.add(fabs(r1[row_number]-lon_mgi[row_number]));
 		}
 
-		cout << fixed;
 		cout << setprecision(8);
 		cout << "Error (axis 0) : " << endl; 
-		cout << "\tmin : " << err_min0 << endl; 
-		cout << "\tmax : " << err_max0 << endl; 
-		cout << "\tavg : " << err_sum0 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq0 - err_sum0*err_sum0) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err0.printout();
 
 		cout << setprecision(8);
 		cout << "Error (axis 1) : " << endl; 
-		cout << "\tmin : " << err_min1 << endl; 
-		cout << "\tmax : " << err_max1 << endl; 
-		cout << "\tavg : " << err_sum1 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq1 - err_sum1*err_sum1) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err1.printout();
 	}
 
 	delete poCT;
@@ -213,67 +216,23 @@ void geog_etrs_ellh_to_geoc_etrs()
 	else
 	{
 		printf( "Transformation successful.\n" );
-		double err_min0 = HUGE_VAL;
-		double err_max0 = -HUGE_VAL;
-		double err_sum0 = 0.0;
-		double err_ssq0 = 0.0;
-
-		double err_min1 = HUGE_VAL;
-		double err_max1 = -HUGE_VAL;
-		double err_sum1 = 0.0;
-		double err_ssq1 = 0.0;
-
-		double err_min2 = HUGE_VAL;
-		double err_max2 = -HUGE_VAL;
-		double err_sum2 = 0.0;
-		double err_ssq2 = 0.0;
+		SummStat err0, err1, err2;
 
 		for(int row_number=0; row_number < num_data; row_number++)
 		{
-			double err0 = fabs(r0[row_number]-x_etrs[row_number]);
-			double err1 = fabs(r1[row_number]-y_etrs[row_number]);
-			double err2 = fabs(r2[row_number]-z_etrs[row_number]);
-
-			err_min0 = MIN(err_min0, err0);
-			err_max0 = MAX(err_max0, err0);
-			err_sum0 += err0;
-			err_ssq0 += err0*err0;
-
-			err_min1 = MIN(err_min1, err1);
-			err_max1 = MAX(err_max1, err1);
-			err_sum1 += err1;
-			err_ssq1 += err1*err1;
-
-			err_min2 = MIN(err_min2, err2);
-			err_max2 = MAX(err_max2, err2);
-			err_sum2 += err2;
-			err_ssq2 += err2*err2;
+			err0.add(fabs(r0[row_number]-x_etrs[row_number]));
+			err1.add(fabs(r1[row_number]-y_etrs[row_number]));
+			err2.add(fabs(r2[row_number]-z_etrs[row_number]));
 		}
 
-		cout << fixed;
-		cout << setprecision(8);
 		cout << "Error (axis 0) : " << endl; 
-		cout << "\tmin : " << err_min0 << endl; 
-		cout << "\tmax : " << err_max0 << endl; 
-		cout << "\tavg : " << err_sum0 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq0 - err_sum0*err_sum0) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err0.printout();
 
-		cout << setprecision(8);
 		cout << "Error (axis 1) : " << endl; 
-		cout << "\tmin : " << err_min1 << endl; 
-		cout << "\tmax : " << err_max1 << endl; 
-		cout << "\tavg : " << err_sum1 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq1 - err_sum1*err_sum1) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err1.printout();
 
-		cout << setprecision(8);
 		cout << "Error (axis 2) : " << endl; 
-		cout << "\tmin : " << err_min2 << endl; 
-		cout << "\tmax : " << err_max2 << endl; 
-		cout << "\tavg : " << err_sum2 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq2 - err_sum2*err_sum2) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err2.printout();
 	}
 
 	delete poCT;
@@ -316,67 +275,23 @@ void geoc_etrs_to_geog_etrs_ellh()
 	else
 	{
 		printf( "Transformation successful.\n" );
-		double err_min0 = HUGE_VAL;
-		double err_max0 = -HUGE_VAL;
-		double err_sum0 = 0.0;
-		double err_ssq0 = 0.0;
-
-		double err_min1 = HUGE_VAL;
-		double err_max1 = -HUGE_VAL;
-		double err_sum1 = 0.0;
-		double err_ssq1 = 0.0;
-
-		double err_min2 = HUGE_VAL;
-		double err_max2 = -HUGE_VAL;
-		double err_sum2 = 0.0;
-		double err_ssq2 = 0.0;
+		SummStat err0, err1, err2;
 
 		for(int row_number=0; row_number < num_data; row_number++)
 		{
-			double err0 = fabs(r0[row_number]-lat_grs[row_number]);
-			double err1 = fabs(r1[row_number]-lon_grs[row_number]);
-			double err2 = fabs(r2[row_number]-hell_grs[row_number]);
-			
-			err_min0 = MIN(err_min0, err0);
-			err_max0 = MAX(err_max0, err0);
-			err_sum0 += err0;
-			err_ssq0 += err0*err0;
-
-			err_min1 = MIN(err_min1, err1);
-			err_max1 = MAX(err_max1, err1);
-			err_sum1 += err1;
-			err_ssq1 += err1*err1;
-
-			err_min2 = MIN(err_min2, err2);
-			err_max2 = MAX(err_max2, err2);
-			err_sum2 += err2;
-			err_ssq2 += err2*err2;
+			err0.add(fabs(r0[row_number]-lat_grs[row_number]));
+			err1.add(fabs(r1[row_number]-lon_grs[row_number]));
+			err2.add(fabs(r2[row_number]-hell_grs[row_number]));
 		}
 
-		cout << fixed;
-		cout << setprecision(8);
 		cout << "Error (axis 0) : " << endl; 
-		cout << "\tmin : " << err_min0 << endl; 
-		cout << "\tmax : " << err_max0 << endl; 
-		cout << "\tavg : " << err_sum0 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq0 - err_sum0*err_sum0) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err0.printout();
 
-		cout << setprecision(8);
 		cout << "Error (axis 1) : " << endl; 
-		cout << "\tmin : " << err_min1 << endl; 
-		cout << "\tmax : " << err_max1 << endl; 
-		cout << "\tavg : " << err_sum1 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq1 - err_sum1*err_sum1) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err1.printout();
 
-		cout << setprecision(8);
 		cout << "Error (axis 2) : " << endl; 
-		cout << "\tmin : " << err_min2 << endl; 
-		cout << "\tmax : " << err_max2 << endl; 
-		cout << "\tavg : " << err_sum2 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq2 - err_sum2*err_sum2) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err2.printout();
 	}
 
 	delete poCT;
@@ -419,67 +334,23 @@ void geoc_etrs_to_geoc_mgi()
 	else
 	{
 		printf( "Transformation successful.\n" );
-		double err_min0 = HUGE_VAL;
-		double err_max0 = -HUGE_VAL;
-		double err_sum0 = 0.0;
-		double err_ssq0 = 0.0;
-
-		double err_min1 = HUGE_VAL;
-		double err_max1 = -HUGE_VAL;
-		double err_sum1 = 0.0;
-		double err_ssq1 = 0.0;
-
-		double err_min2 = HUGE_VAL;
-		double err_max2 = -HUGE_VAL;
-		double err_sum2 = 0.0;
-		double err_ssq2 = 0.0;
+		SummStat err0, err1, err2;
 
 		for(int row_number=0; row_number < num_data; row_number++)
 		{
-			double err0 = fabs(r0[row_number]-x_mgi[row_number]);
-			double err1 = fabs(r1[row_number]-y_mgi[row_number]);
-			double err2 = fabs(r2[row_number]-z_mgi[row_number]);
-
-			err_min0 = MIN(err_min0, err0);
-			err_max0 = MAX(err_max0, err0);
-			err_sum0 += err0;
-			err_ssq0 += err0*err0;
-
-			err_min1 = MIN(err_min1, err1);
-			err_max1 = MAX(err_max1, err1);
-			err_sum1 += err1;
-			err_ssq1 += err1*err1;
-
-			err_min2 = MIN(err_min2, err2);
-			err_max2 = MAX(err_max2, err2);
-			err_sum2 += err2;
-			err_ssq2 += err2*err2;
+			err0.add(fabs(r0[row_number]-x_mgi[row_number]));
+			err1.add(fabs(r1[row_number]-y_mgi[row_number]));
+			err2.add(fabs(r2[row_number]-z_mgi[row_number]));
 		}
 
-		cout << fixed;
-		cout << setprecision(8);
 		cout << "Error (axis 0) : " << endl; 
-		cout << "\tmin : " << err_min0 << endl; 
-		cout << "\tmax : " << err_max0 << endl; 
-		cout << "\tavg : " << err_sum0 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq0 - err_sum0*err_sum0) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err0.printout();
 
-		cout << setprecision(8);
 		cout << "Error (axis 1) : " << endl; 
-		cout << "\tmin : " << err_min1 << endl; 
-		cout << "\tmax : " << err_max1 << endl; 
-		cout << "\tavg : " << err_sum1 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq1 - err_sum1*err_sum1) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err1.printout();
 
-		cout << setprecision(8);
 		cout << "Error (axis 2) : " << endl; 
-		cout << "\tmin : " << err_min2 << endl; 
-		cout << "\tmax : " << err_max2 << endl; 
-		cout << "\tavg : " << err_sum2 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq2 - err_sum2*err_sum2) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err2.printout();
 	}
 
 	delete poCT;
@@ -522,48 +393,19 @@ void geog_mgi_ellh_to_geog_etrs_ellh()
 	else
 	{
 		printf( "Transformation successful.\n" );
-		double err_min0 = HUGE_VAL;
-		double err_max0 = -HUGE_VAL;
-		double err_sum0 = 0.0;
-		double err_ssq0 = 0.0;
-
-		double err_min1 = HUGE_VAL;
-		double err_max1 = -HUGE_VAL;
-		double err_sum1 = 0.0;
-		double err_ssq1 = 0.0;
+		SummStat err0, err1;
 
 		for(int row_number=0; row_number < num_data; row_number++)
 		{
-			double err0 = fabs(r0[row_number]-lat_grs[row_number]);
-			double err1 = fabs(r1[row_number]-lon_grs[row_number]);
-
-			err_min0 = MIN(err_min0, err0);
-			err_max0 = MAX(err_max0, err0);
-			err_sum0 += err0;
-			err_ssq0 += err0*err0;
-
-			err_min1 = MIN(err_min1, err1);
-			err_max1 = MAX(err_max1, err1);
-			err_sum1 += err1;
-			err_ssq1 += err1*err1;
+			err0.add(fabs(r0[row_number]-lat_grs[row_number]));
+			err1.add(fabs(r1[row_number]-lon_grs[row_number]));
 		}
 
-		cout << fixed;
-		cout << setprecision(8);
 		cout << "Error (axis 0) : " << endl; 
-		cout << "\tmin : " << err_min0 << endl; 
-		cout << "\tmax : " << err_max0 << endl; 
-		cout << "\tavg : " << err_sum0 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq0 - err_sum0*err_sum0) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err0.printout();
 
-		cout << setprecision(8);
 		cout << "Error (axis 1) : " << endl; 
-		cout << "\tmin : " << err_min1 << endl; 
-		cout << "\tmax : " << err_max1 << endl; 
-		cout << "\tavg : " << err_sum1 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq1 - err_sum1*err_sum1) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err1.printout();
 	}
 
 	delete poCT;
@@ -606,48 +448,18 @@ void geoc_mgi_ellh_to_geog_etrs_ellh()
 	else
 	{
 		printf( "Transformation successful.\n" );
-		double err_min0 = HUGE_VAL;
-		double err_max0 = -HUGE_VAL;
-		double err_sum0 = 0.0;
-		double err_ssq0 = 0.0;
-
-		double err_min1 = HUGE_VAL;
-		double err_max1 = -HUGE_VAL;
-		double err_sum1 = 0.0;
-		double err_ssq1 = 0.0;
+		SummStat err0, err1;
 
 		for(int row_number=0; row_number < num_data; row_number++)
 		{
-			double err0 = fabs(r0[row_number]-lat_grs[row_number]);
-			double err1 = fabs(r1[row_number]-lon_grs[row_number]);
-
-			err_min0 = MIN(err_min0, err0);
-			err_max0 = MAX(err_max0, err0);
-			err_sum0 += err0;
-			err_ssq0 += err0*err0;
-
-			err_min1 = MIN(err_min1, err1);
-			err_max1 = MAX(err_max1, err1);
-			err_sum1 += err1;
-			err_ssq1 += err1*err1;
+			err0.add(fabs(r0[row_number]-lat_grs[row_number]));
+			err1.add(fabs(r1[row_number]-lon_grs[row_number]));
 		}
 
-		cout << fixed;
-		cout << setprecision(8);
 		cout << "Error (axis 0) : " << endl; 
-		cout << "\tmin : " << err_min0 << endl; 
-		cout << "\tmax : " << err_max0 << endl; 
-		cout << "\tavg : " << err_sum0 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq0 - err_sum0*err_sum0) / ((double)num_data*((double)num_data-1.0)) << endl; 
-
-		cout << setprecision(8);
+		err0.printout();
 		cout << "Error (axis 1) : " << endl; 
-		cout << "\tmin : " << err_min1 << endl; 
-		cout << "\tmax : " << err_max1 << endl; 
-		cout << "\tavg : " << err_sum1 / (double)num_data << endl; 
-		cout << setprecision(18);
-		cout << "\tvar : " << ((double)num_data*err_ssq1 - err_sum1*err_sum1) / ((double)num_data*((double)num_data-1.0)) << endl; 
+		err1.printout();
 	}
 
 	delete poCT;
@@ -701,63 +513,21 @@ void geog_etrs_ellh_to_geog_mgi_ellh_2()
 		else
 		{
 			printf( "inverse Transformation successful.\n" );
-
-			double err_min0 = HUGE_VAL;
-			double err_max0 = -HUGE_VAL;
-			double err_sum0 = 0.0;
-			double err_ssq0 = 0.0;
-
-			double err_min1 = HUGE_VAL;
-			double err_max1 = -HUGE_VAL;
-			double err_sum1 = 0.0;
-			double err_ssq1 = 0.0;
-
-			double err_min2 = HUGE_VAL;
-			double err_max2 = -HUGE_VAL;
-			double err_sum2 = 0.0;
-			double err_ssq2 = 0.0;
+			SummStat err0, err1, err2;
 
 			for(int row_number=0; row_number < num_data; row_number++)
 			{
-				double err0 = fabs(r0[row_number]-lat_grs[row_number]);
-				double err1 = fabs(r1[row_number]-lon_grs[row_number]);
-				double err2 = fabs(r2[row_number]-hell_grs[row_number]);
-
-				err_min0 = MIN(err_min0, err0);
-				err_max0 = MAX(err_max0, err0);
-				err_sum0 += err0;
-				err_ssq0 += err0*err0;
-
-				err_min1 = MIN(err_min1, err1);
-				err_max1 = MAX(err_max1, err1);
-				err_sum1 += err1;
-				err_ssq1 += err1*err1;
-
-				err_min2 = MIN(err_min2, err2);
-				err_max2 = MAX(err_max2, err2);
-				err_sum2 += err2;
-				err_ssq2 += err2*err2;
+				err0.add(fabs(r0[row_number]-lat_grs[row_number]));
+				err1.add(fabs(r1[row_number]-lon_grs[row_number]));
+				err2.add(fabs(r2[row_number]-hell_grs[row_number]));
 			}
 
-			cout << fixed;
-			cout << setprecision(18);
 			cout << "Error (axis 0) : " << endl; 
-			cout << "\tmin : " << err_min0 << endl; 
-			cout << "\tmax : " << err_max0 << endl; 
-			cout << "\tavg : " << err_sum0 / (double)num_data << endl; 
-			cout << "\tvar : " << ((double)num_data*err_ssq0 - err_sum0*err_sum0) / ((double)num_data*((double)num_data-1.0)) << endl; 
-
+			err0.printout();
 			cout << "Error (axis 1) : " << endl; 
-			cout << "\tmin : " << err_min1 << endl; 
-			cout << "\tmax : " << err_max1 << endl; 
-			cout << "\tavg : " << err_sum1 / (double)num_data << endl; 
-			cout << "\tvar : " << ((double)num_data*err_ssq1 - err_sum1*err_sum1) / ((double)num_data*((double)num_data-1.0)) << endl; 
-
+			err1.printout();
 			cout << "Error (axis 2) : " << endl; 
-			cout << "\tmin : " << err_min2 << endl; 
-			cout << "\tmax : " << err_max2 << endl; 
-			cout << "\tavg : " << err_sum2 / (double)num_data << endl; 
-			cout << "\tvar : " << ((double)num_data*err_ssq2 - err_sum2*err_sum2) / ((double)num_data*((double)num_data-1.0)) << endl; 
+			err2.printout();
 		}
 	}
 
@@ -811,63 +581,21 @@ void geoc_etrs_to_geoc_mgi_2()
 		else
 		{
 			printf( "inverse Transformation successful.\n" );
-
-			double err_min0 = HUGE_VAL;
-			double err_max0 = -HUGE_VAL;
-			double err_sum0 = 0.0;
-			double err_ssq0 = 0.0;
-
-			double err_min1 = HUGE_VAL;
-			double err_max1 = -HUGE_VAL;
-			double err_sum1 = 0.0;
-			double err_ssq1 = 0.0;
-
-			double err_min2 = HUGE_VAL;
-			double err_max2 = -HUGE_VAL;
-			double err_sum2 = 0.0;
-			double err_ssq2 = 0.0;
+			SummStat err0, err1, err2;
 
 			for(int row_number=0; row_number < num_data; row_number++)
 			{
-				double err0 = fabs(r0[row_number]-x_etrs[row_number]);
-				double err1 = fabs(r1[row_number]-y_etrs[row_number]);
-				double err2 = fabs(r2[row_number]-z_etrs[row_number]);
-
-				err_min0 = MIN(err_min0, err0);
-				err_max0 = MAX(err_max0, err0);
-				err_sum0 += err0;
-				err_ssq0 += err0*err0;
-
-				err_min1 = MIN(err_min1, err1);
-				err_max1 = MAX(err_max1, err1);
-				err_sum1 += err1;
-				err_ssq1 += err1*err1;
-
-				err_min2 = MIN(err_min2, err2);
-				err_max2 = MAX(err_max2, err2);
-				err_sum2 += err2;
-				err_ssq2 += err2*err2;
+				err0.add(fabs(r0[row_number]-x_etrs[row_number]));
+				err1.add(fabs(r1[row_number]-y_etrs[row_number]));
+				err2.add(fabs(r2[row_number]-z_etrs[row_number]));
 			}
 
-			cout << fixed;
-			cout << setprecision(18);
 			cout << "Error (axis 0) : " << endl; 
-			cout << "\tmin : " << err_min0 << endl; 
-			cout << "\tmax : " << err_max0 << endl; 
-			cout << "\tavg : " << err_sum0 / (double)num_data << endl; 
-			cout << "\tvar : " << ((double)num_data*err_ssq0 - err_sum0*err_sum0) / ((double)num_data*((double)num_data-1.0)) << endl; 
-
+			err0.printout();
 			cout << "Error (axis 1) : " << endl; 
-			cout << "\tmin : " << err_min1 << endl; 
-			cout << "\tmax : " << err_max1 << endl; 
-			cout << "\tavg : " << err_sum1 / (double)num_data << endl; 
-			cout << "\tvar : " << ((double)num_data*err_ssq1 - err_sum1*err_sum1) / ((double)num_data*((double)num_data-1.0)) << endl; 
-
+			err1.printout();
 			cout << "Error (axis 2) : " << endl; 
-			cout << "\tmin : " << err_min2 << endl; 
-			cout << "\tmax : " << err_max2 << endl; 
-			cout << "\tavg : " << err_sum2 / (double)num_data << endl; 
-			cout << "\tvar : " << ((double)num_data*err_ssq2 - err_sum2*err_sum2) / ((double)num_data*((double)num_data-1.0)) << endl; 
+			err2.printout();
 		}
 	}
 
@@ -876,6 +604,29 @@ void geoc_etrs_to_geoc_mgi_2()
 	CPLFree(r0);
 	CPLFree(r1);
 	CPLFree(r2);
+}
+
+void validation_from_etrs()
+{
+	geog_etrs_ellh_to_geoc_etrs();
+	geoc_etrs_to_geog_etrs_ellh();
+
+	geog_etrs_ellh_to_geog_mgi_ellh();
+
+	//geog_etrs_ellh_to_geog_mgi_orth();
+
+	geog_etrs_ellh_to_geog_mgi_ellh_2();
+
+	geoc_etrs_to_geoc_mgi_2();
+}
+
+void validation_from_mgi()
+{
+	//geoc_mgi_to_geog_etrs_ellh();
+
+	geog_mgi_ellh_to_geog_etrs_ellh();
+	
+	//geog_mgi_ellh_to_geog_etrs_ellh_2();
 }
 
 /**********************************************************************
@@ -965,30 +716,14 @@ int main(int argc, char *argv[])
 			break;
 	}
 
+	cout << fixed;
 	cout << "# data point(s) : " << num_data << endl;
 
 	compute_values();
 
-	//- from etrs
-	geog_etrs_ellh_to_geoc_etrs();
-	geoc_etrs_to_geog_etrs_ellh();
-
-	geog_etrs_ellh_to_geog_mgi_ellh();
-
-	geog_etrs_ellh_to_geog_mgi_orth();
-
-	geog_etrs_ellh_to_geog_mgi_ellh_2();
-
-	geoc_etrs_to_geoc_mgi_2();
-
-	//- from mgi
-	//geoc_mgi_to_geog_etrs_ellh();
-
-	geog_mgi_ellh_to_geog_etrs_ellh();
+	validation_from_etrs();
+	validation_from_mgi();
 	
-	//geog_mgi_ellh_to_geog_etrs_ellh_2();
-	
-
 	cout << "Press ENTER to exit.";
 	cin.get();
 	

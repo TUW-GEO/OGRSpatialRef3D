@@ -56,7 +56,7 @@ int main(int argc, char* argv[])
 
 	if(options["src_coord"].length() != 0){
 		char *wkt1 = loadWktFile(options["src_coord"].c_str());
-		oSourceSRS.importFromWkt(&(wkt1));
+		oSourceSRS.importFromWkt3D(&(wkt1));
 		oSourceSRS.exportToProj4(&(wkt1));
 		cout << wkt1 << endl;
 	}
@@ -64,13 +64,13 @@ int main(int argc, char* argv[])
 		int slen = options["src_wkt"].length() + 1;
 		char *cstr = new char[slen];
 		CPLStrlcpy(cstr, options["src_wkt"].c_str(), slen);
-		oSourceSRS.importFromWkt(&(cstr));
+		oSourceSRS.importFromWkt3D(&(cstr));
 		delete [] cstr;
 	}
 
 	if(options["dst_coord"].length() != 0){
 		char *wkt2 = loadWktFile(options["dst_coord"].c_str());
-		oTargetSRS.importFromWkt(&(wkt2));
+		oTargetSRS.importFromWkt3D(&(wkt2));
 		oTargetSRS.exportToProj4(&(wkt2));
 		cout << wkt2 << endl;
 	}
@@ -78,10 +78,12 @@ int main(int argc, char* argv[])
 		int slen = options["dst_wkt"].length() + 1;
 		char *cstr = new char[slen];
 		CPLStrlcpy(cstr, options["dst_wkt"].c_str(), slen);
-		oTargetSRS.importFromWkt(&(cstr));
+		oTargetSRS.importFromWkt3D(&(cstr));
 		delete [] cstr;
 	}
 
+
+	/*
 	const OGR_SRSNode *poGEOID = oSourceSRS.GetAttrNode( "GEOID" );
 	if (poGEOID != NULL){
 		const char *pszGEOID = poGEOID->GetChild(1)->GetChild(0)->GetValue();
@@ -101,6 +103,7 @@ int main(int argc, char* argv[])
 	else{
 		std::cout << "NO GEOID in TARGET" << std::endl;
 	}
+	*/
 
 	CPLSetConfigOption("GDAL_DATA", options["gdal_data"].c_str());
 	if(options["input_file"].length() == 0){
