@@ -82,29 +82,6 @@ int main(int argc, char* argv[])
 		delete [] cstr;
 	}
 
-
-	/*
-	const OGR_SRSNode *poGEOID = oSourceSRS.GetAttrNode( "GEOID" );
-	if (poGEOID != NULL){
-		const char *pszGEOID = poGEOID->GetChild(1)->GetChild(0)->GetValue();
-		std::cout << "Loading source GEOID : " << pszGEOID << std::endl;
-		oSourceSRS.SetGeoidModel(pszGEOID);
-	}
-	else{
-		std::cout << "NO GEOID in SOURCE" << std::endl;
-	}
-
-	poGEOID = oTargetSRS.GetAttrNode( "GEOID" );
-	if (poGEOID != NULL){
-		const char *pszGEOID = poGEOID->GetChild(1)->GetChild(0)->GetValue();
-		std::cout << "Loading target GEOID : " << pszGEOID << std::endl;
-		oTargetSRS.SetGeoidModel(pszGEOID);
-	}
-	else{
-		std::cout << "NO GEOID in TARGET" << std::endl;
-	}
-	*/
-
 	CPLSetConfigOption("GDAL_DATA", options["gdal_data"].c_str());
 	if(options["input_file"].length() == 0){
 		cerr << "no data FILE given" << endl;
@@ -138,16 +115,17 @@ int main(int argc, char* argv[])
 
 		ss >> sourcex >> sourcey >> sourcez;
 
+
 		double targetx = sourcex;
 		double targety = sourcey;
 		double targetz = sourcez;
 
-		cout << sourcex << sourcey << sourcez << endl;
+		cout << sourcex << " " << sourcey << " " << sourcez << endl;
 		//do actual transformation
 		if( poCT == NULL || !poCT->Transform( 1, &targetx, &targety ,&targetz) )
 			printf( "Transformation failed.\n" );
 		else
-			printf( "(%f,%f,%f) -> (%f,%f,%f)\n", sourcex, sourcey, sourcez, targetx, targety, targetz );
+			printf( "(%f, %f, %f) -> (%f, %f, %f)\n", sourcex, sourcey, sourcez, targetx, targety, targetz );
 	}
 
 	cout << "Press ENTER to exit.";

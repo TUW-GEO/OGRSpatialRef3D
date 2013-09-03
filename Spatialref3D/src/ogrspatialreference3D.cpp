@@ -86,7 +86,7 @@ OGRErr
 	if(OGRERR_NONE != importFromWkt(pszWKT))
 	{
 		//handle for import error
-		std::cout << "Error import WKT3D : " << std::endl;
+		std::cerr << "Error import WKT3D : " << std::endl;
 	}
 	//delete[] str;
 
@@ -97,13 +97,13 @@ OGRErr
 		if(OGRERR_NONE != SetGeoidModel(pszData))
 		{
 			//handle for loading error
-			std::cout << "Error Loading GEOID : " << pszData << std::endl;
+			std::cerr << "Error Loading GEOID : " << pszData << std::endl;
 			throw OGRERR_FAILURE;
 		}
 	}
 	else
 	{
-		std::cout << "no GEOID" << std::endl;
+		std::cerr << "no GEOID" << std::endl;
 	}
 
 	poNode = GetAttrNode( "VCORR" );
@@ -113,13 +113,13 @@ OGRErr
 		if(OGRERR_NONE != SetVCorrModel(pszData))
 		{
 			//handle for loading error
-			std::cout << "Error Loading VCORR : " << pszData << std::endl;
+			std::cerr << "Error Loading VCORR : " << pszData << std::endl;
 			throw OGRERR_FAILURE;
 		}
 	}
 	else
 	{
-		std::cout << "no VCORR" << std::endl;
+		std::cerr << "no VCORR" << std::endl;
 	}
 
 	poNode = GetAttrNode( "VSHIFT" );
@@ -130,7 +130,7 @@ OGRErr
 	}
 	else
 	{
-		std::cout << "no VSHIFT" << std::endl;
+		//std::cout << "no VSHIFT" << std::endl;
 	}
 
 	poNode = GetAttrNode( "VSCALE" );
@@ -141,8 +141,9 @@ OGRErr
 	}
 	else
 	{
-		std::cout << "no VSCALE" << std::endl;
+		//std::cout << "no VSCALE" << std::endl;
 	}
+	return OGRERR_NONE;
 }
 
 OGRErr OGRSpatialReference3D::SetVOffset( double  dfVOffset )
@@ -220,9 +221,9 @@ OGRErr OGRSpatialReference3D::ApplyVerticalCorrection(int is_inverse, unsigned i
 		poGeoid->GetValueAt(point_count, x, y, dZTemp);
 		for(unsigned int i=0; i<point_count; ++i){
 			dZCorr[i] += dZTemp[i];
-			if(is_debug && dbg_geoid != NULL){
+
+			if(is_debug && dbg_geoid != NULL)
 				dbg_geoid[i] = dZTemp[i];
-			}
 		}
 	}
 
@@ -230,15 +231,15 @@ OGRErr OGRSpatialReference3D::ApplyVerticalCorrection(int is_inverse, unsigned i
 		poVCorr->GetValueAt(point_count, x, y, dZTemp);
 		for(unsigned int i=0; i<point_count; ++i){
 			dZCorr[i] += dZTemp[i];
-			if(is_debug && dbg_vcorr != NULL){
+			
+			if(is_debug && dbg_vcorr != NULL)
 				dbg_vcorr[i] = dZTemp[i];
-			}
 		}
 	}
 
 	for(unsigned int i=0; i<point_count; ++i)
 	{
-		cout << "XYZ : " << x[i] << " " << y[i] << " " << z[i] << endl;
+		//cout << "XYZ : " << x[i] << " " << y[i] << " " << z[i] << endl;
 		if(is_inverse)
 			z[i] -= dZCorr[i];
 		else

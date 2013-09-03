@@ -1,6 +1,7 @@
 #include "res_manager.h"
 #include "cpl_port.h"
 #include "interpolation.h"
+#include <iostream>
 
 #define RAD_TO_DEG	57.29577951308232
 #define MAXINT 9999999
@@ -43,6 +44,9 @@ double
 		int nWndLeft = (int)dPixel-MAXEXTENT/2;
 		int nWndTop = (int)dLine-MAXEXTENT/2;
 
+		//std::cout << "sample window (" << nWndLeft << " " << nWndTop << ")";
+		//std::cout << " of (" << nRasterWidth << ", " << nRasterHeight << ")" << std::endl;
+
 		Request(MAX(0, nWndLeft), MAX(0, nWndTop), 
 				MIN(nRasterWidth-1, nWndLeft+MAXEXTENT), 
 				MIN(nRasterHeight-1, nWndTop+MAXEXTENT));
@@ -55,9 +59,8 @@ void
 	RasterResampler::GetValueAt(int point_count, double *x, double *y, double *z)
 {
 	// dummy naive approach 
-	for(int i=0; i<point_count; ++i)
-		z[i] = GetValueAt(x[i], y[i]);
-
+	//for(int i=0; i<point_count; ++i) z[i] = GetValueAt(x[i], y[i]); return;
+	//
 	// indexed (UNTESTED)
 	double* padX = (double*)CPLMalloc(sizeof(double)*point_count);
 	double* padY = (double*)CPLMalloc(sizeof(double)*point_count);
@@ -85,17 +88,21 @@ void
 		dYMax = MAX(dYMax, py);
 	}
 
-	double dWidth = dXMax-dXMin;
-	double dHeight = dYMax-dYMin;
+	double dWidth = ceil(dXMax)-floor(dXMin);
+	double dHeight = ceil(dYMax)-floor(dYMin);
 
 	if (bIsSmall || (dWidth < MAXEXTENT && dHeight < MAXEXTENT)){
 		// do it in single patch
 		// use naive approach embedded in single point interface
-
+		
 		// TODO: add checking to window boundary against raster boundary
-		Request((int)dXMin, (int)dYMin, (int)dWidth+2, (int)dHeight+2);
+		Request(MAX(0, (int)dXMin), MAX(0, (int)dYMin), 
+			MIN((int)dWidth+1, nRasterWidth),
+			MIN((int)dHeight+1, nRasterHeight));
 
 		for(int i=0; i<point_count; ++i){
+			if (i==308)
+				std::cout << x[i] << " " << y[i] << " " << padX[i] << " " << padY[i] << std::endl;
 			z[i] = GetValueResampled(padX[i], padY[i]);
 		}
 	}
@@ -117,6 +124,8 @@ void
 						int nWndLeft = (int)padX[i]-MAXEXTENT/2;
 						int nWndTop = (int)padY[i]-MAXEXTENT/2;
 
+						//std::cout << nWndLeft << " " << nWndTop << std::endl;
+
 						Request(MAX(0, nWndLeft), MAX(0, nWndTop), 
 								MIN(nRasterWidth-1, nWndLeft+MAXEXTENT), 
 								MIN(nRasterHeight-1, nWndTop+MAXEXTENT));
@@ -130,7 +139,7 @@ void
 			for(int i=0; i<point_count; ++i){
 				// skip processed points or points outside current cache window
 				if(panIdx[i]
-					|| !INSIDE((int)padX[i], (int)padY[i], nWndXOffset, nWndYOffset, nWndWidth, nWndHeight)) 
+					|| !INSIDE((int)floor(padX[i]), (int)floor(padY[i]), nWndXOffset, nWndYOffset, nWndWidth-1, nWndHeight-1)) //add floor and -1
 						continue;
 
 				z[i] = GetValueResampled(padX[i], padY[i]);
@@ -218,7 +227,7 @@ void
 {
 	nRasterWidth = poData->GetRasterXSize();
     nRasterHeight = poData->GetRasterYSize();
-	bIsSmall = (nRasterWidth < MAXEXTENT) && (nRasterHeight > MAXEXTENT);
+	bIsSmall = (nRasterWidth < MAXEXTENT) && (nRasterHeight < MAXEXTENT);
 
 	dNoDataValue = poData->GetRasterBand(1)->GetNoDataValue();
 	double geotrans[6];
@@ -234,6 +243,8 @@ void
 	 * Access pixel data from raster file to temporary buffer (padWindow)
 	 */
 {
+	std::cout << "window request " << left << " " << top << " " << left+width << " " << top+height << std::endl;
+
 	nWndXOffset = left;
 	nWndYOffset = top;
 	nWndWidth = width;
