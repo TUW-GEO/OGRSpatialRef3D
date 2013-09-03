@@ -3,11 +3,13 @@ Microsoft Visual Studio Solution File, Format Version 11.00
 # Visual Studio 2010
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "makeproj", "proj-4.8.0\makeproj100.vcxproj", "{6748AA7F-872B-49EB-92B9-F690B912A6FB}"
 EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "test", "test\test.vcxproj", "{6644DDD6-EF52-4AF7-BEEC-940F9CF97111}"
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "osr3d", "test\test.vcxproj", "{6644DDD6-EF52-4AF7-BEEC-940F9CF97111}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "makegdal", "gdal-1.10.0\makegdal10.vcxproj", "{4B0D11B1-F067-421E-8A6C-A51A0FE1E90D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Spatialref3D", "Spatialref3D\Spatialref3D.vcxproj", "{08AE2AB0-958E-4612-AA24-4B192DFF82E2}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "validation", "validation\validation.vcxproj", "{C010E6C7-C872-4314-811E-BFC7930BF709}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -31,6 +33,10 @@ Global
 		{08AE2AB0-958E-4612-AA24-4B192DFF82E2}.Debug|Win32.Build.0 = Debug|Win32
 		{08AE2AB0-958E-4612-AA24-4B192DFF82E2}.Release|Win32.ActiveCfg = Release|Win32
 		{08AE2AB0-958E-4612-AA24-4B192DFF82E2}.Release|Win32.Build.0 = Release|Win32
+		{C010E6C7-C872-4314-811E-BFC7930BF709}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C010E6C7-C872-4314-811E-BFC7930BF709}.Debug|Win32.Build.0 = Debug|Win32
+		{C010E6C7-C872-4314-811E-BFC7930BF709}.Release|Win32.ActiveCfg = Release|Win32
+		{C010E6C7-C872-4314-811E-BFC7930BF709}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
