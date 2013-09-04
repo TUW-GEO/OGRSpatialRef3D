@@ -58,10 +58,10 @@ double
 void
 	RasterResampler::GetValueAt(int point_count, double *x, double *y, double *z)
 {
-	// dummy naive approach 
+	// dummy naive approach (tested)
 	//for(int i=0; i<point_count; ++i) z[i] = GetValueAt(x[i], y[i]); return;
 	//
-	// indexed (UNTESTED)
+	// indexed (TESTED ON SMALL window ONLY)
 	double* padX = (double*)CPLMalloc(sizeof(double)*point_count);
 	double* padY = (double*)CPLMalloc(sizeof(double)*point_count);
 
@@ -101,8 +101,6 @@ void
 			MIN((int)dHeight+1, nRasterHeight));
 
 		for(int i=0; i<point_count; ++i){
-			if (i==308)
-				std::cout << x[i] << " " << y[i] << " " << padX[i] << " " << padY[i] << std::endl;
 			z[i] = GetValueResampled(padX[i], padY[i]);
 		}
 	}
@@ -243,7 +241,7 @@ void
 	 * Access pixel data from raster file to temporary buffer (padWindow)
 	 */
 {
-	std::cout << "window request " << left << " " << top << " " << left+width << " " << top+height << std::endl;
+	//std::cout << "window request " << left << " " << top << " " << left+width << " " << top+height << std::endl;
 
 	nWndXOffset = left;
 	nWndYOffset = top;
