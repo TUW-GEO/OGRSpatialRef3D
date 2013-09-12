@@ -41,17 +41,14 @@ double
 	if (padWindow == NULL 
 				|| !INSIDE((int)dPixel, (int)dLine, nWndXOffset, nWndYOffset, nWndWidth, nWndHeight)){
 
-		int nWndLeft = (int)dPixel-MAXEXTENT/2;
-		int nWndTop = (int)dLine-MAXEXTENT/2;
+		int nWndLeft = MAX(0, MIN(nRasterWidth-2, (int)dPixel-MAXEXTENT/2));
+		int nWndTop = MAX(0, MIN(nRasterHeight-2, (int)dLine-MAXEXTENT/2));
 
 		//std::cout << "sample window (" << nWndLeft << " " << nWndTop << ")";
 		//std::cout << " of (" << nRasterWidth << ", " << nRasterHeight << ")" << std::endl;
 
-		Request(MAX(0, nWndLeft), MAX(0, nWndTop), 
-				MIN(nRasterWidth-1, nWndLeft+MAXEXTENT), 
-				MIN(nRasterHeight-1, nWndTop+MAXEXTENT));
+		Request(nWndLeft, nWndTop, MAXEXTENT, MAXEXTENT);
 	}
-
 	return GetValueResampled(dPixel, dLine);
 }
 
@@ -59,6 +56,11 @@ void
 	RasterResampler::GetValueAt(int point_count, double *x, double *y, double *z)
 {
 	// dummy naive approach (tested)
+	if (point_count==1)
+	{
+		z[0] = GetValueAt(x[0], y[0]); 
+		return;
+	}
 	//for(int i=0; i<point_count; ++i) z[i] = GetValueAt(x[i], y[i]); return;
 	//
 	// indexed (TESTED ON SMALL window ONLY)
@@ -94,11 +96,11 @@ void
 	if (bIsSmall || (dWidth < MAXEXTENT && dHeight < MAXEXTENT)){
 		// do it in single patch
 		// use naive approach embedded in single point interface
+		int drwLeft = MAX(0, MIN(nRasterWidth-2, (int)dXMin));
+		int drwTop = MAX(0, MIN(nRasterHeight-2,(int)dYMin));
 		
 		// TODO: add checking to window boundary against raster boundary
-		Request(MAX(0, (int)dXMin), MAX(0, (int)dYMin), 
-			MIN((int)dWidth+1, nRasterWidth),
-			MIN((int)dHeight+1, nRasterHeight));
+		Request(drwLeft, drwTop, (int)dWidth+1, (int)dHeight+1);
 
 		for(int i=0; i<point_count; ++i){
 			z[i] = GetValueResampled(padX[i], padY[i]);
@@ -119,14 +121,12 @@ void
 				if(!panIdx[i]){
 					if (padWindow == NULL){
 				
-						int nWndLeft = (int)padX[i]-MAXEXTENT/2;
-						int nWndTop = (int)padY[i]-MAXEXTENT/2;
+						int nWndLeft = MAX(0, MIN(nRasterWidth-2, (int)padX[i]-MAXEXTENT/2));
+						int nWndTop = MAX(0, MIN(nRasterWidth-2, (int)padY[i]-MAXEXTENT/2));
 
 						//std::cout << nWndLeft << " " << nWndTop << std::endl;
 
-						Request(MAX(0, nWndLeft), MAX(0, nWndTop), 
-								MIN(nRasterWidth-1, nWndLeft+MAXEXTENT), 
-								MIN(nRasterHeight-1, nWndTop+MAXEXTENT));
+						Request(nWndLeft, nWndTop, MAXEXTENT, MAXEXTENT);
 					}
 
 					break;
@@ -141,6 +141,7 @@ void
 						continue;
 
 				z[i] = GetValueResampled(padX[i], padY[i]);
+
 				panIdx[i] = true;	// mark processed
 				unprocessed_count += 1;
 			}
@@ -186,8 +187,11 @@ double
 	int py = (int)floor(y);
 
 	// Boundary checking
-	if (px < 0 || py < 0 || px >= nRasterWidth || py >= nRasterHeight)
-		throw std::exception( "point outside raster." );
+	if (px < 0 || py < 0 || px >= nRasterWidth || py >= nRasterHeight){
+		std::cerr << "point (" << px << "," << py << ") outside raster." << "(" << nRasterWidth << ", " << nRasterHeight<< ")" << std::endl;
+		return 0.0;
+		//throw std::exception( "point outside raster." );
+	}
 	else {
 		double dx = x - px;
 		double dy = y - py;
@@ -245,8 +249,10 @@ void
 
 	nWndXOffset = left;
 	nWndYOffset = top;
-	nWndWidth = width;
-	nWndHeight = height;
+	nWndWidth = MIN(nRasterWidth-left, width);
+	nWndHeight = MIN(nRasterHeight-top, height);
+
+	//std::cout << "window given " << left << " " << top << " " << left+nWndWidth << " " << top+nWndHeight << std::endl;
 	
 	Cleanup();
 
@@ -265,11 +271,11 @@ void
 	 * converts map coordinate (radian) to raster coordinate (pixels)
 	 */
 {
-	*(x) = dInvGeotrans[0]+ 
+	*(x) = -0.5+dInvGeotrans[0]+ 
           + *(x) * dInvGeotrans[1] * RAD_TO_DEG
           + *(y) * dInvGeotrans[2] * RAD_TO_DEG;
 
-    *(y) = dInvGeotrans[3]
+    *(y) = -0.5+dInvGeotrans[3]
           + *(x) * dInvGeotrans[4] * RAD_TO_DEG
           + *(y) * dInvGeotrans[5] * RAD_TO_DEG;
 }

@@ -6,6 +6,7 @@
 
 #include "validate.h"
 #include "cpl_conv.h"
+#include "ogr_spatialref3D.h"
 
 double *x_etrs, *y_etrs, *z_etrs;
 double *lon_grs, *lat_grs;
@@ -17,9 +18,15 @@ double *ras_val, *h_grid;
 int *ms; // meridian strip
 int num_data;
 
+double *hell_mgi;
+double *x_mgi, *y_mgi, *z_mgi;
+
 char buffer[1024];
 
 using namespace std;
+
+void compute_ellh_mgi();
+void compute_geoc_mgi();
 
 void val_init()
 {
@@ -47,6 +54,12 @@ void val_init()
 	h_grid = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
 
 	ms = (int*)CPLMalloc(sizeof(int)*MAX_DATA);
+
+	hell_mgi = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
+
+	x_mgi = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
+	y_mgi = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
+	z_mgi = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
 }
 
 void val_cleanup()
@@ -75,6 +88,12 @@ void val_cleanup()
 	CPLFree(h_grid);
 
 	CPLFree(ms);
+	
+	CPLFree(hell_mgi);
+
+	CPLFree(x_mgi);
+	CPLFree(y_mgi);
+	CPLFree(z_mgi);
 }
 
 char *loadWktFile(const char* sWktFilename){
@@ -107,6 +126,7 @@ void loadRefFile(string filename, int max_input)
 	else{
 		cout << "reading file " << filename << endl;
 	}
+	num_data = 0;
 	
 	string line="";
 	while(!inFile.eof()){
@@ -131,9 +151,10 @@ void loadRefFile(string filename, int max_input)
 		ss >> col; lon_grs[num_data] = col;
 
 		ss >> col; hell_grs[num_data] = col;
+		//cout << col << endl;
 
-		ss >> col; y_gebr[num_data] = col;
 		ss >> col; x_gebr[num_data] = col;
+		ss >> col; y_gebr[num_data] = col;
 		ss >> col; h_gebr[num_data] = col;
 
 		ss >> col; und_bess[num_data] = col;
@@ -160,4 +181,119 @@ void loadRefFile(string filename, int max_input)
 		if(max_input != -1 && num_data == max_input)
 			break;
 	}
+	inFile.close();
+
+	filename = "mgi_LonLatEllH.xyz";
+	inFile.open(filename, ios::in);
+	if (!inFile) {
+		cerr << "Can't open input file " << filename << endl;
+		exit(1);
+	}
+	else{
+		cout << "reading file " << filename << endl;
+	}
+
+	for(int i=0; i<num_data; ++i){
+		getline(inFile, line);
+
+		stringstream ss(line);
+		ss >> lon_mgi[i] >> lat_mgi[i] >> hell_mgi[i];
+
+		double col = 0.0;
+	}
+	inFile.close();
+
+	compute_ellh_mgi();
+	compute_geoc_mgi();
+}
+
+void compute_ellh_mgi()
+{
+	for(int row_number=0; row_number < num_data; row_number++)
+	//{
+		hell_mgi[row_number] = h_orth[row_number] + und_bess[row_number];
+	//}
+	//return;
+
+	//compute X,Y in MGI GK
+	OGRSpatialReference3D oSourceSRS, oTargetSRS_28, oTargetSRS_31, oTargetSRS_34;
+
+	char *wkt1 = loadWktFile(GEOG_MGI);
+	oSourceSRS.importFromWkt3D(&(wkt1));
+
+	char *wkt2 = loadWktFile(PROJ_MGI_28);
+	oTargetSRS_28.importFromWkt3D(&(wkt2));
+
+	wkt2 = loadWktFile(PROJ_MGI_31);
+	oTargetSRS_31.importFromWkt3D(&(wkt2));
+
+	wkt2 = loadWktFile(PROJ_MGI_34);
+	oTargetSRS_34.importFromWkt3D(&(wkt2));
+
+	OGRCoordinateTransformation3D *poCT_28 = OGRCreateCoordinateTransformation3D( 
+													&oSourceSRS, &oTargetSRS_28 );
+	OGRCoordinateTransformation3D *poCT_31 = OGRCreateCoordinateTransformation3D( 
+													&oSourceSRS, &oTargetSRS_31 );
+	OGRCoordinateTransformation3D *poCT_34 = OGRCreateCoordinateTransformation3D( 
+													&oSourceSRS, &oTargetSRS_34 );
+
+	for(int row_number=0; row_number < num_data; row_number++)
+		{
+			x_gebr[row_number] = lon_mgi[row_number];
+			y_gebr[row_number] = lat_mgi[row_number];
+			//r2[row_number] = z_etrs[row_number];
+
+			switch(ms[row_number])
+			{
+			case 28:
+				poCT_28->Transform( 1, &(x_gebr[row_number]), &(y_gebr[row_number]), 0);//&(r2[row_number]));
+				break;
+			case 31:
+				poCT_31->Transform( 1, &(x_gebr[row_number]), &(y_gebr[row_number]), 0);//&(r2[row_number]));
+				break;
+			case 34:
+				poCT_34->Transform( 1, &(x_gebr[row_number]), &(y_gebr[row_number]), 0);//&(r2[row_number]));
+				break;
+			default:
+				cerr << "invalid meridianstrip value" << ms[row_number] << endl;
+			}
+
+		}
+
+	delete poCT_28;
+	delete poCT_31;
+	delete poCT_34;
+}
+
+void compute_geoc_mgi()
+{
+	OGRSpatialReference3D oSourceSRS, oTargetSRS;
+
+	char *wkt1 = loadWktFile(GEOG_MGI);
+	oSourceSRS.importFromWkt3D(&(wkt1));
+
+	char *wkt2 = loadWktFile(GEOC_MGI);
+	oTargetSRS.importFromWkt3D(&(wkt2));
+
+	OGRCoordinateTransformation3D *poCT = OGRCreateCoordinateTransformation3D( 
+													&oSourceSRS, &oTargetSRS );
+
+	for(int row_number=0; row_number < num_data; row_number++)
+	{
+		x_mgi[row_number] = lon_mgi[row_number];
+		y_mgi[row_number] = lat_mgi[row_number];
+		z_mgi[row_number] = hell_mgi[row_number];
+	}
+
+	if( poCT == NULL || !poCT->Transform( num_data, x_mgi, y_mgi ,z_mgi) )
+	{
+		//printf( "Transformation failed.\n" );
+	}
+	else
+	{
+		//printf( "Transformation successful.\n" );
+		
+	}
+
+	delete poCT;
 }

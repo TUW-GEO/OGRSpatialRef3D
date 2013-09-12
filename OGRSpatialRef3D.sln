@@ -11,6 +11,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Spatialref3D", "Spatialref3
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "validation", "validation\validation.vcxproj", "{C010E6C7-C872-4314-811E-BFC7930BF709}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "perftest", "perftest\perftest.vcxproj", "{68AAE03B-5448-4727-8EEC-1D78EF85DC39}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -37,6 +39,10 @@ Global
 		{C010E6C7-C872-4314-811E-BFC7930BF709}.Debug|Win32.Build.0 = Debug|Win32
 		{C010E6C7-C872-4314-811E-BFC7930BF709}.Release|Win32.ActiveCfg = Release|Win32
 		{C010E6C7-C872-4314-811E-BFC7930BF709}.Release|Win32.Build.0 = Release|Win32
+		{68AAE03B-5448-4727-8EEC-1D78EF85DC39}.Debug|Win32.ActiveCfg = Debug|Win32
+		{68AAE03B-5448-4727-8EEC-1D78EF85DC39}.Debug|Win32.Build.0 = Debug|Win32
+		{68AAE03B-5448-4727-8EEC-1D78EF85DC39}.Release|Win32.ActiveCfg = Release|Win32
+		{68AAE03B-5448-4727-8EEC-1D78EF85DC39}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

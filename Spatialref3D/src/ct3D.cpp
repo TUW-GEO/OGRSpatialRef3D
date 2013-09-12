@@ -734,7 +734,7 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
     }
 	*/
 	//PEB
-	if(poSRSSource->HasGeoidModel() || poSRSSource->HasVCorrModel())
+	if(z!=NULL && (poSRSSource->HasGeoidModel() || poSRSSource->HasVCorrModel()))
 	{
 		poSRSSource->ApplyVerticalCorrection(0, point_count, x, y, z);
 	}
@@ -754,7 +754,7 @@ int OGRProj4CT3D::ct3D_pj_transform(PJ *srcdefn, PJ *dstdefn, long point_count, 
 /*      datum?                                                          */
 /* -------------------------------------------------------------------- */
 	//PEB
-	if(poSRSTarget->HasGeoidModel() || poSRSTarget->HasVCorrModel())
+	if(z != NULL && (poSRSTarget->HasGeoidModel() || poSRSTarget->HasVCorrModel()))
 	{
 		//x y z coordinates are in radian
 		poSRSTarget->ApplyVerticalCorrection(1, point_count, x, y, z);

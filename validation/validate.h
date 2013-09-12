@@ -15,6 +15,9 @@
 #define GEOG_MGI_ORTH "mgi_ortho.prj" 
 
 #define PROJ_MGI "mgi_proj.prj" //orthometric height with offset
+#define PROJ_MGI_28 "mgi_proj_28.prj" //orthometric height with offset
+#define PROJ_MGI_31 "mgi_proj_31.prj" //orthometric height with offset
+#define PROJ_MGI_34 "mgi_proj_34.prj" //orthometric height with offset
 
 /*
  *
@@ -29,6 +32,9 @@ extern double *lat_mgi, *lon_mgi;
 extern double *ras_val, *h_grid;
 extern int *ms; // meridian strip
 extern int num_data;
+
+//computed values
+extern double *hell_mgi, *x_mgi, *y_mgi, *z_mgi;
 
 class SummStat
 {

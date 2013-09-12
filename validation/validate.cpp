@@ -26,7 +26,6 @@ int main(int argc, char *argv[])
 			exit(1);
 	}
 	
-
 	val_init();
 
 	loadRefFile(options["input_file"], atoi(options["num_input"].c_str()));
@@ -34,13 +33,14 @@ int main(int argc, char *argv[])
 	cout << fixed; cout << "# data point(s) : " << num_data << endl;
 
 	val_geoc_etrs();
-	val_geog_etrs();
-	val_geog_etrs_ortho();
+	//val_geog_etrs();
+	//val_geog_etrs_ortho();
 
 	//val_geog_mgi(); //hell_mgi not available
-	val_geog_mgi_ortho();
+	//val_geog_mgi_ortho();
 	//val_proj_mgi(); //error rasterio out of bound
 
+	cout << "cleaning up.." << endl;
 	val_cleanup();
 	
 	cout << "Press ENTER to exit.";
