@@ -16,6 +16,9 @@ double *x_out, *y_out, *z_out;
 #define TEST_FILE "Line13.xyz"
 #define MAX_DATA 13000000	//12877662
 
+#define GET_TIMER(x) x = (double)(clock())/CLOCKS_PER_SEC; //in [s]
+#define DIFF_TIME(a,b) (a-b)
+
 char buffer[1024];
 
 #define SOURCE_SRS "utm33-etrs89.prj"
@@ -45,8 +48,8 @@ char *loadWktFile(const char* sWktFilename){
 
 int main(int argc, char *argv[])
 {
-	time_t start_time, end_time;
-	time(&start_time);
+	double start_time, end_time;
+	GET_TIMER(start_time);
 
 	FILE *fi = fopen(TEST_FILE, "r");
 	if (!fi) {
@@ -81,10 +84,10 @@ int main(int argc, char *argv[])
 	}
 	fclose(fi);
 	
-	time(&end_time);
+	GET_TIMER(end_time);
 	cout << fixed;
 	cout << num_data << endl;
-	cout << (int)difftime(end_time, start_time)<< " s" << endl;
+	cout << DIFF_TIME(end_time, start_time)<< " s" << endl;
 
 	//return 0;
 
@@ -150,14 +153,14 @@ int main(int argc, char *argv[])
 				z_out[sample] = z_in[data_offset+sample];
 			}
 
-			time(&start_time);
+			GET_TIMER(start_time);
 			//insert transform here
 			if( poCT == NULL || !poCT->Transform( num_samples[cur_step], x_out, y_out ,z_out) )
 			{
 				cout << "Transformation failed.\n";
 			}
-			time(&end_time);
-			delta_time = difftime(end_time, start_time)*1000;
+			GET_TIMER(end_time);
+			delta_time = DIFF_TIME(end_time, start_time);
 
 			sample_sum[cur_step] += delta_time;
 			sample_sumsq[cur_step] += (delta_time*delta_time);
@@ -172,14 +175,14 @@ int main(int argc, char *argv[])
 				z_out[sample] = z_in[data_offset+sample];
 			}
 
-			time(&start_time);
+			GET_TIMER(start_time);
 			//insert transform here
 			if( poCT == NULL || !poCT_h->Transform( num_samples[cur_step], x_out, y_out ,z_out) )
 			{
 				cout << "Transformation failed.\n";
 			}
-			time(&end_time);
-			delta_time = difftime(end_time, start_time)*1000;
+			GET_TIMER(end_time);
+			delta_time = DIFF_TIME(end_time, start_time);
 
 			sample_sum_h[cur_step] += delta_time;
 			sample_sumsq_h[cur_step] += (delta_time*delta_time);
@@ -193,14 +196,14 @@ int main(int argc, char *argv[])
 				z_out[sample] = z_in[data_offset+sample];
 			}
 
-			time(&start_time);
+			GET_TIMER(start_time);
 			//insert transform here
 			if( poCT == NULL || !poCT_hh->Transform( num_samples[cur_step], x_out, y_out ,z_out) )
 			{
 				cout << "Transformation failed.\n";
 			}
-			time(&end_time);
-			delta_time = difftime(end_time, start_time)*1000;
+			GET_TIMER(end_time);
+			delta_time = DIFF_TIME(end_time, start_time);
 
 			sample_sum_hh[cur_step] += delta_time;
 			sample_sumsq_hh[cur_step] += (delta_time*delta_time);

@@ -33,12 +33,12 @@ int main(int argc, char *argv[])
 	cout << fixed; cout << "# data point(s) : " << num_data << endl;
 
 	val_geoc_etrs();
-	//val_geog_etrs();
-	//val_geog_etrs_ortho();
+	val_geog_etrs();
+	val_geog_etrs_ortho();
 
-	//val_geog_mgi(); //hell_mgi not available
-	//val_geog_mgi_ortho();
-	//val_proj_mgi(); //error rasterio out of bound
+	val_geog_mgi();
+	val_geog_mgi_ortho();
+	val_proj_mgi(); 
 
 	cout << "cleaning up.." << endl;
 	val_cleanup();

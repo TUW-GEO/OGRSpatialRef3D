@@ -71,13 +71,19 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <AdditionalIncludeDirectories>..\gdal-1.10.0\distro\include;..\proj-4.8.0\distro\include;..\SpatialRef3D\include;..\test\src</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>..\gdal-1.10.0\distro\lib;..\proj-4.8.0\distro\lib;..\SpatialRef3D</AdditionalLibraryDirectories>
+      <AdditionalDependencies>proj_i.lib;gdal_i.lib;Spatialref3d.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
+    <PostBuildEvent>
+      <Command>copy ..\Spatialref3d\Spatialref3d.dll $(OutDir) &amp;&amp; copy ..\gdal-1.10.0\distro\bin\gdal110.dll $(OutDir) &amp;&amp; copy ..\proj-4.8.0\distro\bin\proj.dll $(OutDir)</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\test\src\OptionParser.cpp" />
