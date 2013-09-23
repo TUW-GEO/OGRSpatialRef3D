@@ -80,30 +80,21 @@ OGRSpatialReference3D::~OGRSpatialReference3D()
 OGRErr      
 	OGRSpatialReference3D::importFromWkt3D( char ** pszWKT)
 {
-	//int slen = strlen(*pszWKT)+1;
-	//char *str = new char[slen];
-	//CPLStrlcpy(str, *pszWKT, slen);
 	if(OGRERR_NONE != importFromWkt(pszWKT))
 	{
 		//handle for import error
 		std::cerr << "Error import WKT3D : " << std::endl;
 	}
-	//delete[] str;
 
 	const OGR_SRSNode *poNode = GetAttrNode( "GEOID" );
 	if (poNode != NULL){
 		const char *pszData = poNode->GetChild(1)->GetChild(0)->GetValue();
-		std::cout << "Loading GEOID : " << pszData << std::endl;
 		if(OGRERR_NONE != SetGeoidModel(pszData))
 		{
 			//handle for loading error
 			std::cerr << "Error Loading GEOID : " << pszData << std::endl;
 			throw OGRERR_FAILURE;
 		}
-	}
-	else
-	{
-		std::cerr << "no GEOID" << std::endl;
 	}
 
 	poNode = GetAttrNode( "VCORR" );
@@ -117,31 +108,18 @@ OGRErr
 			throw OGRERR_FAILURE;
 		}
 	}
-	else
-	{
-		std::cerr << "no VCORR" << std::endl;
-	}
 
 	poNode = GetAttrNode( "VSHIFT" );
 	if (poNode != NULL){
 		const char *pszData = poNode->GetChild(0)->GetValue();
-		std::cout << "Loading VSHIFT : " << pszData << std::endl;
 		SetVOffset(atof(pszData));
 	}
-	else
-	{
-		//std::cout << "no VSHIFT" << std::endl;
-	}
-
+	
 	poNode = GetAttrNode( "VSCALE" );
 	if (poNode != NULL){
 		const char *pszData = poNode->GetChild(0)->GetValue();
 		std::cout << "Loading VSCALE : " << pszData << std::endl;
 		SetVScale(atof(pszData));
-	}
-	else
-	{
-		//std::cout << "no VSCALE" << std::endl;
 	}
 	return OGRERR_NONE;
 }
@@ -190,7 +168,6 @@ OGRErr OGRSpatialReference3D::SetGeoidModel( const char * pszGeoidModel )
 
 OGRErr OGRSpatialReference3D::SetVCorrModel( const char * pszVCorrModel )
 {
-	//poVCorr = (GDALDataset *) GDALOpen( pszVCorrModel, GA_ReadOnly );
 	if(poVCorr != NULL)
 		delete poVCorr;
 
@@ -199,8 +176,7 @@ OGRErr OGRSpatialReference3D::SetVCorrModel( const char * pszVCorrModel )
 
 	if( poVCorr == NULL )
     {
-        printf("gdal failed - unable to open '%s'.\n",
-                 pszVCorrModel );
+        std::cerr << "gdal failed - unable to open '" << pszVCorrModel << "'.\n";
 		return OGRERR_FAILURE;
 	}
 	bHasVCorr = true;
@@ -239,7 +215,6 @@ OGRErr OGRSpatialReference3D::ApplyVerticalCorrection(int is_inverse, unsigned i
 
 	for(unsigned int i=0; i<point_count; ++i)
 	{
-		//cout << "XYZ : " << x[i] << " " << y[i] << " " << z[i] << endl;
 		if(is_inverse)
 			z[i] -= dZCorr[i];
 		else

@@ -25,6 +25,7 @@ char buffer[1024];
 #define TARGET_SRS "utm33-etrs89-orthoH.prj"	//geoid
 #define TARGET_SRS_HEIGHT "gkm34-mgi-gkm34.prj" //datum change + geoid
 #define TARGET_SRS_ALLH "gkm34-mgi-gkm34_h.prj"	//datum change + geoid + height correction
+#define TARGET_SRS_ELLH "gkm34-mgi-gkm34_ell.prj"
 
 using namespace std;
 
@@ -89,20 +90,24 @@ int main(int argc, char *argv[])
 	cout << num_data << endl;
 	cout << DIFF_TIME(end_time, start_time)<< " s" << endl;
 
-	//return 0;
+	//--
 
 	int num_samples[] = {1,10,100,1000,10000,100000,1000000,10000000};
-	double sample_sum[8];
-	double sample_sumsq[8];
-	double sample_sum_h[8];
-	double sample_sumsq_h[8];
-	double sample_sum_hh[8];
-	double sample_sumsq_hh[8];
-	int num_sampling = 10;
+	int sample_count = 0;
 	double delta_time = 0.0;
+	int data_offset = 0;
+	int num_run = 10;
 
-	OGRSpatialReference3D oSourceSRS, oTargetSRS, oTargetSRS_h, oTargetSRS_hh;
+	double sum = 0.0;
+	double sumsq = 0.0;
+
+	OGRSpatialReference3D oSourceSRS, oTargetSRS, oTargetSRS_h, oTargetSRS_hh, oTargetSRS_eh;
+	OGRCoordinateTransformation3D *poCT[4];
+
 	char *wkt;
+
+	//--
+
 	wkt = loadWktFile(SOURCE_SRS);
 	oSourceSRS.importFromWkt3D(&(wkt));
 
@@ -115,113 +120,66 @@ int main(int argc, char *argv[])
 	wkt = loadWktFile(TARGET_SRS_ALLH);
 	oTargetSRS_hh.importFromWkt3D(&(wkt));
 
-	OGRCoordinateTransformation3D *poCT = OGRCreateCoordinateTransformation3D( 
-													&oSourceSRS, &oTargetSRS );
+	wkt = loadWktFile(TARGET_SRS_ELLH);
+	oTargetSRS_eh.importFromWkt3D(&(wkt));
 
-	OGRCoordinateTransformation3D *poCT_h = OGRCreateCoordinateTransformation3D( 
-													&oSourceSRS, &oTargetSRS_h );
+	poCT[0] = OGRCreateCoordinateTransformation3D(&oSourceSRS, &oTargetSRS );
+	poCT[1] = OGRCreateCoordinateTransformation3D(&oSourceSRS, &oTargetSRS_h );
+	poCT[2] = OGRCreateCoordinateTransformation3D(&oSourceSRS, &oTargetSRS_hh );
+	poCT[3] = OGRCreateCoordinateTransformation3D(&oSourceSRS, &oTargetSRS_eh );
+	
+	std::cout << std::setprecision(3);
 
-	OGRCoordinateTransformation3D *poCT_hh = OGRCreateCoordinateTransformation3D( 
-													&oSourceSRS, &oTargetSRS_hh );
-	default_random_engine generator;
-	int cur_step;
-
-	for(cur_step=0; cur_step<=7; ++cur_step)
+	for(int trafo=0; trafo<4; ++trafo)
 	{
-		if (num_data<num_samples[cur_step]) break;
-		cout << cur_step << " num samples : " << num_samples[cur_step] << endl;
-		uniform_int_distribution<int> distribution(0,num_data-num_samples[cur_step]);
-		int data_offset = 0;
-
-		sample_sum[cur_step] = 0.0;
-		sample_sumsq[cur_step] = 0.0;
-		sample_sum_h[cur_step] = 0.0;
-		sample_sumsq_h[cur_step] = 0.0;
-		sample_sum_hh[cur_step] = 0.0;
-		sample_sumsq_hh[cur_step] = 0.0;
+		for(int cur_step=0; cur_step<8; ++cur_step)
+		{
+			if (num_data<num_samples[cur_step]) break;
+			cout << " num samples : " << num_samples[cur_step] << endl;
 		
-		for(int retry=0; retry<num_sampling; ++retry){
-			//generate experiment data
-			data_offset = distribution(generator);
+			sum = 0.0;
+			sumsq = 0.0;
+			for(int run=0; run<num_run; ++run){
+				GET_TIMER(start_time);
 
-			//just geoid
+				//just geoid
+				data_offset = 0;
+				while(data_offset<num_data){
+			
+					sample_count = MIN(num_samples[cur_step], num_data-data_offset+1);
+					for (int sample=0; sample<sample_count; ++sample)
+					{
+						x_out[sample] = x_in[data_offset+sample];
+						y_out[sample] = y_in[data_offset+sample];
+						z_out[sample] = z_in[data_offset+sample];
+					}
+					data_offset += sample_count; 
 
-			for (int sample=0; sample<num_samples[cur_step]; ++sample)
-			{
-				x_out[sample] = x_in[data_offset+sample];
-				y_out[sample] = y_in[data_offset+sample];
-				z_out[sample] = z_in[data_offset+sample];
+					//insert transform here
+					if( poCT == NULL || !poCT[trafo]->Transform( sample_count, x_out, y_out ,z_out) )
+					{
+						cout << "Transformation failed.\n";
+					}
+				}//retry
+
+				GET_TIMER(end_time);
+				delta_time = DIFF_TIME(end_time, start_time);
+
+				sum += delta_time;
+				sumsq += delta_time*delta_time;
+
+				switch(trafo){
+					case 0:cout << SOURCE_SRS << " to " << TARGET_SRS << " : "; break;
+					case 1:cout << SOURCE_SRS << " to " << TARGET_SRS_HEIGHT << " : "; break;
+					case 2:cout << SOURCE_SRS << " to " << TARGET_SRS_ALLH << " : "; break;
+					case 3:cout << SOURCE_SRS << " to " << TARGET_SRS_ELLH << " : "; break;
+				}
+				cout << delta_time << endl;
 			}
+			cout << "running " << num_run << "times. AVG: " << sum/num_run << " STDDEV: " << ((double)num_run*sumsq-sum*sum)/(double)(num_run*(num_run-1)) << endl;
+		}//step
 
-			GET_TIMER(start_time);
-			//insert transform here
-			if( poCT == NULL || !poCT->Transform( num_samples[cur_step], x_out, y_out ,z_out) )
-			{
-				cout << "Transformation failed.\n";
-			}
-			GET_TIMER(end_time);
-			delta_time = DIFF_TIME(end_time, start_time);
-
-			sample_sum[cur_step] += delta_time;
-			sample_sumsq[cur_step] += (delta_time*delta_time);
-
-
-			//datum shift + geoid
-
-			for (int sample=0; sample<num_samples[cur_step]; ++sample)
-			{
-				x_out[sample] = x_in[data_offset+sample];
-				y_out[sample] = y_in[data_offset+sample];
-				z_out[sample] = z_in[data_offset+sample];
-			}
-
-			GET_TIMER(start_time);
-			//insert transform here
-			if( poCT == NULL || !poCT_h->Transform( num_samples[cur_step], x_out, y_out ,z_out) )
-			{
-				cout << "Transformation failed.\n";
-			}
-			GET_TIMER(end_time);
-			delta_time = DIFF_TIME(end_time, start_time);
-
-			sample_sum_h[cur_step] += delta_time;
-			sample_sumsq_h[cur_step] += (delta_time*delta_time);
-
-			//datum shift + geoid + height correction
-
-			for (int sample=0; sample<num_samples[cur_step]; ++sample)
-			{
-				x_out[sample] = x_in[data_offset+sample];
-				y_out[sample] = y_in[data_offset+sample];
-				z_out[sample] = z_in[data_offset+sample];
-			}
-
-			GET_TIMER(start_time);
-			//insert transform here
-			if( poCT == NULL || !poCT_hh->Transform( num_samples[cur_step], x_out, y_out ,z_out) )
-			{
-				cout << "Transformation failed.\n";
-			}
-			GET_TIMER(end_time);
-			delta_time = DIFF_TIME(end_time, start_time);
-
-			sample_sum_hh[cur_step] += delta_time;
-			sample_sumsq_hh[cur_step] += (delta_time*delta_time);
-		}//retry
-
-		std::cout << std::setprecision(3);
-		double n = (double)num_sampling;
-		cout << "num data : " << n << " retries : " << num_sampling << endl;
-		cout << SOURCE_SRS << " to " << TARGET_SRS << endl;
-		cout << "avg : " << sample_sum[cur_step] / n << endl;
-		cout << "var : " << ((double)n*sample_sumsq[cur_step] - sample_sum[cur_step]*sample_sum[cur_step]) / (n*(n-1)) << std::endl; 
-		cout << SOURCE_SRS << " to " << TARGET_SRS_HEIGHT << endl;
-		cout << "avg : " << sample_sum_h[cur_step] / n << endl;
-		cout << "var : " << ((double)n*sample_sumsq_h[cur_step] - sample_sum_h[cur_step]*sample_sum_h[cur_step]) / (n*(n-1)) << std::endl; 
-		cout << SOURCE_SRS << " to " << TARGET_SRS_ALLH << endl;
-		cout << "avg : " << sample_sum_hh[cur_step] / n << endl;
-		cout << "var : " << ((double)n*sample_sumsq_hh[cur_step] - sample_sum_hh[cur_step]*sample_sum_hh[cur_step]) / (n*(n-1)) << std::endl; 
-	}//step
+	}
 
 	CPLFree(x_in);
 	CPLFree(y_in);
