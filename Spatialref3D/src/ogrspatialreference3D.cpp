@@ -124,10 +124,9 @@ OGRErr
 	return OGRERR_NONE;
 }
 
-OGRErr OGRSpatialReference3D::SetVOffset( double  dfVOffset )
+void OGRSpatialReference3D::SetVOffset( double  dfVOffset )
 {
 	dfVOffset_ = dfVOffset;
-	return OGRERR_NONE;
 }
 
 double OGRSpatialReference3D::GetVOffset ()
@@ -136,10 +135,9 @@ double OGRSpatialReference3D::GetVOffset ()
 }
 
 
-OGRErr OGRSpatialReference3D::SetVScale( double  dfVScale )
+void OGRSpatialReference3D::SetVScale( double  dfVScale )
 {
 	dfVScale_ = dfVScale;
-	return OGRERR_NONE;
 }
 
 double OGRSpatialReference3D::GetVScale ()
@@ -227,11 +225,10 @@ OGRErr OGRSpatialReference3D::ApplyVerticalCorrection(int is_inverse, unsigned i
 	return OGRERR_NONE;
 }
 
+/*
 double OGRSpatialReference3D::GetValueAt(GDALDataset* hDataset, double x, double y)
 {
-	/*
-	 * Deprecated (no longer in use)
-	 */
+	//Deprecated (no longer in use)
 	cout << "get raster size" << endl;
 	int nXsize = hDataset->GetRasterXSize();
     int nYsize = hDataset->GetRasterYSize();
@@ -357,6 +354,8 @@ double OGRSpatialReference3D::GetValueAt(GDALDataset* hDataset, double x, double
 
 	return 0.0;
 }
+*/
+
 
 bool OGRSpatialReference3D::HasGeoidModel ()
 {

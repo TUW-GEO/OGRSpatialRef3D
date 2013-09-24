@@ -16,45 +16,62 @@
 
 class RasterResampler
 {
-public:
-	RasterResampler();
-	virtual ~RasterResampler();
-
-	// per-point interface
-	double GetValueAt(double x, double y);
-
-	// bulk of points interface (input x, input y, output z)
-	void GetValueAt(int point_count, double *x, double *y, double *z);
-
-	OGRErr Open(const char *pszFilename);
-	const char* GetFilename();
-
-protected:
-	CPLString sFilename;	
+	CPLString sFilename;	/**< string value containing filename of raster */
 
 	GDALDataset *poData;	
 	int nRasterWidth;		
 	int nRasterHeight;		
-	bool bIsSmall;			// is raster small enough to be kept in memory (decided when prepare)
+	bool bIsSmall;			/**< is raster small enough to be kept in memory (decided when prepare) */
 
 	//double dGeotrans[6];	// do we need to keep this here or local variable is enough ?
 	double dNoDataValue;
-	double dInvGeotrans[6];	
+	double dInvGeotrans[6];	/**< Inverse geotransform used for MapToRaster coordinate transform */
 
-	double *padWindow;		// window pixels
+	double *padWindow;		/**< pointer to cached raster block of nWndWidth x nWndHeight size */
 
-	int nWndXOffset;		// window left
-	int nWndYOffset;		// window top
-	int nWndWidth;			// window width
-	int nWndHeight;			// window height
+	int nWndXOffset;		/**< left position of cached raster block window */
+	int nWndYOffset;		/**< top position of cached raster block window */
+	int nWndWidth;			/**< width of cached raster block window */
+	int nWndHeight;			/**< height of cahced raster block window */
+public:
+	RasterResampler();
+	virtual ~RasterResampler();
 
-	// refactor for managing interpolation
+	//! function to retrieve raster value at given point
+	double GetValueAt(double x, double y);
+
+	//! function to retrieve raster value at given array of points (x, y) and store in z
+	void GetValueAt(int point_count, double *x, double *y, double *z);
+
+	//! method to load GDAL compatible raster
+	/*!
+		\param pszFilename a string value indicating filename of raster
+		\return OGRERR_NONE if loading successful or OGRERR_FAILURE otherwise
+		\sa GetFilename()
+	*/
+	OGRErr Open(const char *pszFilename);
+
+	//! function to retrieve raster filename
+	/*!
+		\return a string indicating filename of loaded raster
+		\sa Open()
+	*/
+	const char* GetFilename();
+
+protected:
+	//! function to lookup raster value from given point in map space
 	double GetValueResampled(double x, double y);
 
-	// caching utilities
+	//! caching utilities
 	void Prepare();
+
+	//! method to allocate and move raster block from file to memory
 	void Request(int left, int top, int width, int height);
+
+	//! method to release allocated buffer for storing cached raster block
 	void Cleanup();
+
+	//! function to convert coordinate from map space (lon, lat) to raster space (pixel, line)
 	void MapToRaster(double *x, double *y);
 };
 
