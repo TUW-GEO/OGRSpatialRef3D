@@ -86,15 +86,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="interpolation.cpp" />
-    <ClCompile Include="res_manager.cpp" />
     <ClCompile Include="src\ct3D.cpp" />
+    <ClCompile Include="src\interpolation.cpp" />
     <ClCompile Include="src\ogrspatialreference3D.cpp" />
+    <ClCompile Include="src\res_manager.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\interpolation.h" />
     <ClInclude Include="include\ogr_spatialref3D.h" />
     <ClInclude Include="include\res_manager.h" />
-    <ClInclude Include="interpolation.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

@@ -100,7 +100,6 @@ OGRErr
 	poNode = GetAttrNode( "VCORR" );
 	if (poNode != NULL){
 		const char *pszData = poNode->GetChild(1)->GetChild(0)->GetValue();
-		std::cout << "Loading VCORR : " << pszData << std::endl;
 		if(OGRERR_NONE != SetVCorrModel(pszData))
 		{
 			//handle for loading error
@@ -109,6 +108,7 @@ OGRErr
 		}
 	}
 
+	//currently these parameters are unused, deferred for future implementations
 	poNode = GetAttrNode( "VSHIFT" );
 	if (poNode != NULL){
 		const char *pszData = poNode->GetChild(0)->GetValue();
@@ -366,6 +366,11 @@ bool OGRSpatialReference3D::HasGeoidModel ()
 bool OGRSpatialReference3D::HasVCorrModel ()
 {
 	return bHasVCorr;
+}
+
+bool OGRSpatialReference3D::HasVerticalModel()
+{
+	return HasGeoidModel() || HasVCorrModel();
 }
 
 void OGRSpatialReference3D::SetDebug(bool debug_mode)

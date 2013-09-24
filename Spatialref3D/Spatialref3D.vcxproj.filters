@@ -21,10 +21,10 @@
     <ClCompile Include="src\ogrspatialreference3D.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="res_manager.cpp">
+    <ClCompile Include="src\interpolation.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="interpolation.cpp">
+    <ClCompile Include="src\res_manager.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -35,7 +35,7 @@
     <ClInclude Include="include\res_manager.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="interpolation.h">
+    <ClInclude Include="include\interpolation.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

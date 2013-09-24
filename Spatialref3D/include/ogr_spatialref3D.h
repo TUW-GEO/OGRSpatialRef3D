@@ -29,10 +29,12 @@
 #ifndef _OGR_SPATIALREF3D_H_INCLUDED
 #define _OGR_SPATIALREF3D_H_INCLUDED
 
-
+#include "cpl_port.h"
 #include "gdal_priv.h"
 #include "ogr_spatialref.h"
 #include "res_manager.h"
+
+CPL_C_START
 
 /************************************************************************/
 /*                         OGRSpatialReference3D                        */
@@ -86,14 +88,16 @@ public:
     OGRErr SetVScale( double  dfVScale );
     double GetVScale ();
 
-	bool HasGeoidModel();
-	bool HasVCorrModel();
+	bool HasVerticalModel();
 
 	OGRErr ApplyVerticalCorrection(int is_inverse, unsigned int point_count, double *x, double *y, double *z);
 	void SetDebug(bool debug_mode);
 	void SetDebugData(double *geoid_undulation, double *vert_correction);
 
 protected:
+	bool HasGeoidModel();
+	bool HasVCorrModel();
+
 	double GetValueAt(GDALDataset* hDataset, double x, double y);
 };
 
@@ -107,5 +111,6 @@ CPL_DLL OGRCoordinateTransformation3D *
 OGRCreateCoordinateTransformation3D( OGRSpatialReference3D *poSource,
                                    OGRSpatialReference3D *poTarget );
 
+CPL_C_END
 
 #endif

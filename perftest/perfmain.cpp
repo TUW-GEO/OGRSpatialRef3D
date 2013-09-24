@@ -1,3 +1,31 @@
+/******************************************************************************
+ *
+ * Project:  SpatialRef3D performance test
+ * Purpose:  program to test the performance transformation speed in 
+ *           different size of data chunk.
+ * Authors:  Peb Ruswono Aryan, Gottfried Mandlburger, Johannes Otepka
+ *
+ ******************************************************************************
+ * Copyright (c) 2012,  I.P.F., TU Vienna.
+  *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ ****************************************************************************/
 #include <iostream>
 #include <iomanip>
 #include <string>
@@ -22,10 +50,10 @@ double *x_out, *y_out, *z_out;
 char buffer[1024];
 
 #define SOURCE_SRS "utm33-etrs89.prj"
-#define TARGET_SRS "utm33-etrs89-orthoH.prj"	//geoid
-#define TARGET_SRS_HEIGHT "gkm34-mgi-gkm34.prj" //datum change + geoid
-#define TARGET_SRS_ALLH "gkm34-mgi-gkm34_h.prj"	//datum change + geoid + height correction
-#define TARGET_SRS_ELLH "gkm34-mgi-gkm34_ell.prj"
+#define TARGET_SRS "utm33-etrs89-orthoH.prj"		//geoid
+#define TARGET_SRS_HEIGHT "gkm34-mgi-gkm34.prj"		//datum change + geoid
+#define TARGET_SRS_ALLH "gkm34-mgi-gkm34_h.prj"		//datum change + geoid + height correction
+#define TARGET_SRS_ELLH "gkm34-mgi-gkm34_ell.prj"	//datum change
 
 using namespace std;
 
@@ -67,10 +95,12 @@ int main(int argc, char *argv[])
 	x_out = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
 	y_out = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
 	z_out = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
+
 	cout << fixed;
 	int last_num_data = 1;
 	int num_data = 0;
 	int max_input = -1;
+
 	while(!feof(fi)){
 		fscanf(fi, "%lf %lf %lf", &(x_in[num_data]), &(y_in[num_data]), &(z_in[num_data]));
 
