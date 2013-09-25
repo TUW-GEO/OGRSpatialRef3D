@@ -39,11 +39,12 @@
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <LinkIncremental>true</LinkIncremental>
-    <OutDir>$(ProjectDir)</OutDir>
     <TargetName>$(ProjectName)_d</TargetName>
+    <OutDir>$(ProjectDir)\bin</OutDir>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <LinkIncremental>false</LinkIncremental>
+    <OutDir>$(ProjectDir)\bin</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
@@ -59,10 +60,11 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <AdditionalLibraryDirectories>..\gdal-1.10.0\distro\lib;..\proj-4.8.0\distro\lib;</AdditionalLibraryDirectories>
       <AdditionalDependencies>gdal_i.lib;proj_i.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <OutputFile>$(ProjectDir)$(TargetName)$(TargetExt)</OutputFile>
+      <ImportLibrary>$(ProjectDir)\lib\$(TargetName).lib</ImportLibrary>
     </Link>
+    <PostBuildEvent />
     <PostBuildEvent>
-      <Command>copy SpatialRef3D.dll ..\Debug\SpatialRef3D.dll</Command>
+      <Command>if not exist $(SolutionDir)$(Configuration) mkdir $(SolutionDir)$(Configuration) &amp;&amp; copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)$(Configuration)\ &amp;&amp; copy ..\gdal-1.10.0\distro\bin\gdal110.dll $(SolutionDir)$(Configuration)\ &amp;&amp; copy ..\proj-4.8.0\distro\bin\proj.dll $(SolutionDir)$(Configuration)\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -83,7 +85,11 @@
       <OptimizeReferences>true</OptimizeReferences>
       <AdditionalLibraryDirectories>..\gdal-1.10.0\distro\lib;..\proj-4.8.0\distro\lib;</AdditionalLibraryDirectories>
       <AdditionalDependencies>gdal_i.lib;proj_i.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ImportLibrary>$(ProjectDir)\lib\$(TargetName).lib</ImportLibrary>
     </Link>
+    <PostBuildEvent>
+      <Command>if not exist $(SolutionDir)$(Configuration) mkdir $(SolutionDir)$(Configuration) &amp;&amp; copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)$(Configuration)\ &amp;&amp; copy ..\gdal-1.10.0\distro\bin\gdal110.dll $(SolutionDir)$(Configuration)\ &amp;&amp; copy ..\proj-4.8.0\distro\bin\proj.dll $(SolutionDir)$(Configuration)\</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="src\ct3D.cpp" />
