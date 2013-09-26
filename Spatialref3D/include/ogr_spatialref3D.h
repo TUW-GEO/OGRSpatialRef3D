@@ -6,7 +6,7 @@
  * Authors:  Gottfried Mandlburger, Johannes Otepka, Bhargav patel
  *
  ******************************************************************************
- * Copyright (c) 2012-2013,  I.P.F., TU Vieanna.
+ * Copyright (c) 2012-2013,  I.P.F., TU Vienna.
   *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -92,6 +92,7 @@ public:
 	  \sa GetGeoidModel()
     */
  	OGRErr SetGeoidModel( const char * pszGeoidModel );
+	
 	//! function to retrieve geoid undulation model filename
     /*!
       \return string indicating filename of geoid undulation model
@@ -106,6 +107,7 @@ public:
 	  \sa GetVCorrModel()
     */
     OGRErr SetVCorrModel( const char * pszVCorrModel );
+	
 	//! function to retrieve height correction model filename
     /*!
       \return string indicating filename of height correction model
@@ -118,6 +120,7 @@ public:
       \param dfVOffset a float value.
     */
     void SetVOffset( double  dfVOffset );
+	
 	//! function to get additional Vertical shift value
     double GetVOffset ();
 
@@ -126,6 +129,7 @@ public:
       \param dfVScale a float value.
     */
     void SetVScale( double  dfVScale );
+	
 	//! function to get additional Vertical scaling value
     double GetVScale ();
 

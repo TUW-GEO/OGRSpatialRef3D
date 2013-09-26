@@ -58,7 +58,7 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>..\gdal-1.10.0\distro\include;..\proj-4.8.0\distro\include;..\SpatialRef3D\include;..\test\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\gdal-1.10.0\distro\include;..\proj-4.8.0\distro\include;..\SpatialRef3D\include;..\common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
@@ -69,7 +69,11 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="..\common\OptionParser.cpp" />
     <ClCompile Include="perfmain.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\common\OptionParser.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

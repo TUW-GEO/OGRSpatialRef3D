@@ -5,7 +5,7 @@
  * Authors:  Gottfried Mandlburger, Johannes Otepka, Peb Ruswono Aryan
  *
  ******************************************************************************
- * Copyright (c) 2012-2013,  I.P.F., TU Vieanna.
+ * Copyright (c) 2012-2013,  I.P.F., TU Vienna.
   *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),

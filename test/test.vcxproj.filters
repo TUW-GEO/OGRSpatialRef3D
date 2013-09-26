@@ -18,12 +18,12 @@
     <ClCompile Include="src\main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\OptionParser.cpp">
+    <ClCompile Include="..\common\OptionParser.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="src\OptionParser.h">
+    <ClInclude Include="..\common\OptionParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

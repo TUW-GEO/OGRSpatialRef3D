@@ -75,7 +75,7 @@ double bilinearInterpolation(double p[4], double dx, double dy, double dNoDataVa
 
 /*
  * implementation from http://www.paulinternet.nl/?page=bicubic
- * TODO: handle NoDataValue
+ * TODO: handle NoDataValue or look in gdalwarp
  */
 
 double cubicInterpolate (double p[4], double x) {

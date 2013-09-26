@@ -18,9 +18,6 @@
     <ClCompile Include="validate.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\test\src\OptionParser.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="val_stat.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -45,12 +42,15 @@
     <ClCompile Include="val_proj_mgi.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\common\OptionParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\test\src\OptionParser.h">
+    <ClInclude Include="validate.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="validate.h">
+    <ClInclude Include="..\common\OptionParser.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
