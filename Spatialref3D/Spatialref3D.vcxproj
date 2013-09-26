@@ -64,7 +64,10 @@
     </Link>
     <PostBuildEvent />
     <PostBuildEvent>
-      <Command>if not exist $(SolutionDir)$(Configuration) mkdir $(SolutionDir)$(Configuration) &amp;&amp; copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)$(Configuration)\ &amp;&amp; copy ..\gdal-1.10.0\distro\bin\gdal110.dll $(SolutionDir)$(Configuration)\ &amp;&amp; copy ..\proj-4.8.0\distro\bin\proj.dll $(SolutionDir)$(Configuration)\</Command>
+      <Command>if not exist $(SolutionDir)$(Configuration) mkdir $(SolutionDir)$(Configuration)
+copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)$(Configuration)\
+copy ..\gdal-1.10.0\distro\bin\gdal110.dll $(SolutionDir)$(Configuration)\
+copy ..\proj-4.8.0\distro\bin\proj.dll $(SolutionDir)$(Configuration)\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -88,7 +91,10 @@
       <ImportLibrary>$(ProjectDir)\lib\$(TargetName).lib</ImportLibrary>
     </Link>
     <PostBuildEvent>
-      <Command>if not exist $(SolutionDir)$(Configuration) mkdir $(SolutionDir)$(Configuration) &amp;&amp; copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)$(Configuration)\ &amp;&amp; copy ..\gdal-1.10.0\distro\bin\gdal110.dll $(SolutionDir)$(Configuration)\ &amp;&amp; copy ..\proj-4.8.0\distro\bin\proj.dll $(SolutionDir)$(Configuration)\</Command>
+      <Command>if not exist $(SolutionDir)$(Configuration) mkdir $(SolutionDir)$(Configuration)
+copy $(OutDir)$(TargetName)$(TargetExt) $(SolutionDir)$(Configuration)\
+copy ..\gdal-1.10.0\distro\bin\gdal110.dll $(SolutionDir)$(Configuration)\
+copy ..\proj-4.8.0\distro\bin\proj.dll $(SolutionDir)$(Configuration)\</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
