@@ -37,23 +37,26 @@
 
 #include "cpl_conv.h"
 #include "ogr_spatialref3D.h"
+#include "OptionParser.h"
 
 double *x_in, *y_in, *z_in;
 double *x_out, *y_out, *z_out;
 
-#define TEST_FILE "Line13.xyz"
-#define MAX_DATA 13000000	//12877662
+//#define TEST_FILE "Line13.xyz"
+#define MAX_DATA 16000000	//12877662
 
 #define GET_TIMER(x) x = (double)(clock())/CLOCKS_PER_SEC; //in [s]
 #define DIFF_TIME(a,b) (a-b)
 
 char buffer[1024];
 
+/*
 #define SOURCE_SRS "utm33-etrs89.prj"
 #define TARGET_SRS "utm33-etrs89-orthoH.prj"		//geoid
 #define TARGET_SRS_HEIGHT "gkm34-mgi-gkm34.prj"		//datum change + geoid
 #define TARGET_SRS_ALLH "gkm34-mgi-gkm34_h.prj"		//datum change + geoid + height correction
 #define TARGET_SRS_ELLH "gkm34-mgi-gkm34_ell.prj"	//datum change
+*/
 
 using namespace std;
 
@@ -77,29 +80,56 @@ char *loadWktFile(const char* sWktFilename){
 
 int main(int argc, char *argv[])
 {
+	optparse::OptionParser parser = optparse::OptionParser().description("OGRSpatialRef3D performance testing program");
+
+	parser.add_option("-i", "--input-file").dest("input_file").help("set input data FILE").metavar("FILE");
+
+	parser.add_option("-s", "--source-coord").dest("src_coord").help("set source coordinate system WKT_FILE").metavar("WKT_FILE");
+	parser.add_option("-d", "--dest-coord").dest("dst_coord").help("set destination coordinate system WKT_FILE").metavar("WKT_FILE");
+
+	parser.add_option("-m", "--max-input").dest("max_input").help("maximum number of points read from input file (default 16M)").set_default(MAX_DATA);
+	parser.add_option("-c", "--chunk-size").dest("chunk_size").help("number of points per chunk in one transformation call (default 10 pts per chunk)").metavar("CHUNK").set_default(10);
+	parser.add_option("-r", "--repeat").dest("num_repeat").help("number of repetition for each transformation should be done (minimum 2, default 3)").metavar("N").set_default(3);
+
+	optparse::Values options = parser.parse_args(argc, argv);
+	vector<string> args = parser.args();
+
+	if ((options["input_file"].length() == 0)){
+			cerr << "Input Reference Coordinate is not set." << endl;
+			exit(1);
+	}
+
+	if ((options["src_coord"].length() == 0)){
+			cerr << "Source Spatial Reference is not set." << endl;
+			exit(1);
+	}
+
+	if ((options["dst_coord"].length() == 0)){
+			cerr << "Target Spatial Reference is not set." << endl;
+			exit(1);
+	}
+
+	int max_input = atoi(options["max_input"].c_str());
+	const char *TEST_FILE = options["dst_coord"].c_str();
+
 	double start_time, end_time;
 	GET_TIMER(start_time);
 
-	FILE *fi = fopen(TEST_FILE, "r");
+	FILE *fi = fopen(options["input_file"].c_str(), "r");
 	if (!fi) {
-		cerr << "Can't open input file " << TEST_FILE << endl;
+		cerr << "Can't open input file " << options["input_file"] << endl;
 		exit(1);
 	}
 	else{
-		cout << "reading file " << TEST_FILE << endl;
+		cout << "reading file " << options["input_file"] << endl;
 	}
 
-	x_in = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
-	y_in = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
-	z_in = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
-	x_out = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
-	y_out = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
-	z_out = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
-
-	cout << fixed;
+	x_in = (double*)CPLMalloc(sizeof(double)*max_input);
+	y_in = (double*)CPLMalloc(sizeof(double)*max_input);
+	z_in = (double*)CPLMalloc(sizeof(double)*max_input);
+	
 	int last_num_data = 1;
 	int num_data = 0;
-	int max_input = -1;
 
 	while(!feof(fi)){
 		fscanf(fi, "%lf %lf %lf", &(x_in[num_data]), &(y_in[num_data]), &(z_in[num_data]));
@@ -122,95 +152,72 @@ int main(int argc, char *argv[])
 
 	//--
 
-	int num_samples[] = {1,10,100,1000,10000,100000,1000000,10000000};
+	//int num_samples[] = {1,10,100,1000,10000,100000,1000000,10000000};
+	int num_samples = atoi(options["chunk_size"].c_str());
 	int sample_count = 0;
 	double delta_time = 0.0;
 	int data_offset = 0;
-	int num_run = 10;
+	int num_run = atoi(options["num_repeat"].c_str());
 
 	double sum = 0.0;
 	double sumsq = 0.0;
 
-	OGRSpatialReference3D oSourceSRS, oTargetSRS, oTargetSRS_h, oTargetSRS_hh, oTargetSRS_eh;
-	OGRCoordinateTransformation3D *poCT[4];
+	x_out = (double*)CPLMalloc(sizeof(double)*num_samples);
+	y_out = (double*)CPLMalloc(sizeof(double)*num_samples);
+	z_out = (double*)CPLMalloc(sizeof(double)*num_samples);
+
+	OGRSpatialReference3D oSourceSRS, oTargetSRS;
+	OGRCoordinateTransformation3D *poCT;
 
 	char *wkt;
 
 	//--
 
-	wkt = loadWktFile(SOURCE_SRS);
+	wkt = loadWktFile(options["src_coord"].c_str());
 	oSourceSRS.importFromWkt3D(&(wkt));
 
-	wkt = loadWktFile(TARGET_SRS);
+	wkt = loadWktFile(options["dst_coord"].c_str());
 	oTargetSRS.importFromWkt3D(&(wkt));
 
-	wkt = loadWktFile(TARGET_SRS_HEIGHT);
-	oTargetSRS_h.importFromWkt3D(&(wkt));
-
-	wkt = loadWktFile(TARGET_SRS_ALLH);
-	oTargetSRS_hh.importFromWkt3D(&(wkt));
-
-	wkt = loadWktFile(TARGET_SRS_ELLH);
-	oTargetSRS_eh.importFromWkt3D(&(wkt));
-
-	poCT[0] = OGRCreateCoordinateTransformation3D(&oSourceSRS, &oTargetSRS );
-	poCT[1] = OGRCreateCoordinateTransformation3D(&oSourceSRS, &oTargetSRS_h );
-	poCT[2] = OGRCreateCoordinateTransformation3D(&oSourceSRS, &oTargetSRS_hh );
-	poCT[3] = OGRCreateCoordinateTransformation3D(&oSourceSRS, &oTargetSRS_eh );
+	poCT = OGRCreateCoordinateTransformation3D(&oSourceSRS, &oTargetSRS );
 	
-	std::cout << std::setprecision(3);
+	sum = 0.0;
+	sumsq = 0.0;
+	for(int run=0; run<num_run; ++run){
+		GET_TIMER(start_time);
 
-	for(int trafo=0; trafo<4; ++trafo)
-	{
-		for(int cur_step=0; cur_step<8; ++cur_step)
-		{
-			if (num_data<num_samples[cur_step]) break;
-			cout << " num samples : " << num_samples[cur_step] << endl;
-		
-			sum = 0.0;
-			sumsq = 0.0;
-			for(int run=0; run<num_run; ++run){
-				GET_TIMER(start_time);
-
-				//just geoid
-				data_offset = 0;
-				while(data_offset<num_data){
+		data_offset = 0;
+		while(data_offset<num_data){
 			
-					sample_count = MIN(num_samples[cur_step], num_data-data_offset+1);
-					for (int sample=0; sample<sample_count; ++sample)
-					{
-						x_out[sample] = x_in[data_offset+sample];
-						y_out[sample] = y_in[data_offset+sample];
-						z_out[sample] = z_in[data_offset+sample];
-					}
-					data_offset += sample_count; 
-
-					//insert transform here
-					if( poCT == NULL || !poCT[trafo]->Transform( sample_count, x_out, y_out ,z_out) )
-					{
-						cout << "Transformation failed.\n";
-					}
-				}//retry
-
-				GET_TIMER(end_time);
-				delta_time = DIFF_TIME(end_time, start_time);
-
-				sum += delta_time;
-				sumsq += delta_time*delta_time;
-
-				switch(trafo){
-					case 0:cout << SOURCE_SRS << " to " << TARGET_SRS << " : "; break;
-					case 1:cout << SOURCE_SRS << " to " << TARGET_SRS_HEIGHT << " : "; break;
-					case 2:cout << SOURCE_SRS << " to " << TARGET_SRS_ALLH << " : "; break;
-					case 3:cout << SOURCE_SRS << " to " << TARGET_SRS_ELLH << " : "; break;
-				}
-				cout << delta_time << endl;
+			sample_count = MIN(num_samples, num_data-data_offset+1);
+			for (int sample=0; sample<sample_count; ++sample)
+			{
+				x_out[sample] = x_in[data_offset+sample];
+				y_out[sample] = y_in[data_offset+sample];
+				z_out[sample] = z_in[data_offset+sample];
 			}
-			cout << "running " << num_run << "times. AVG: " << sum/num_run << " STDDEV: " << ((double)num_run*sumsq-sum*sum)/(double)(num_run*(num_run-1)) << endl;
-		}//step
+			data_offset += sample_count; 
 
+			if( poCT == NULL || !poCT->Transform( sample_count, x_out, y_out ,z_out) )
+			{
+				cout << "Transformation failed.\n";
+			}
+		}//process next chunk until all data used
+
+		GET_TIMER(end_time);
+		delta_time = DIFF_TIME(end_time, start_time);
+
+		sum += delta_time;
+		sumsq += delta_time*delta_time;
+
+		//cout << SOURCE_SRS << " to " << TARGET_SRS << " : ";
+		//cout << delta_time << endl;
 	}
-
+	cout << fixed;
+	cout << setprecision(3);
+	cout << " num samples : " << num_samples << endl;
+	cout << "running " << num_run << "times. AVG: " << sum/num_run << " STDDEV: " << ((double)num_run*sumsq-sum*sum)/(double)(num_run*(num_run-1)) << endl;
+	
 	CPLFree(x_in);
 	CPLFree(y_in);
 	CPLFree(z_in);
