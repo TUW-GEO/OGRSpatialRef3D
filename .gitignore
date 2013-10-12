@@ -4,10 +4,10 @@
 *.exp
 *.lib
 *.log
-*.bil
-*.blw
-*.flt
-*.hdr
+#*.bil
+#*.blw
+#*.flt
+#*.hdr
 distro
 #gdal copies cpl_config.h.vc to cpl_config.h
 cpl_config.h
