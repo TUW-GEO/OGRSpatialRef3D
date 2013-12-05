@@ -44,7 +44,7 @@
     <ClCompile>
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
-      <AdditionalIncludeDirectories>..\gdal-1.10.0\distro\include;..\proj-4.8.0\distro\include;..\SpatialRef3D\include;..\test\src</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\gdal-1.10.0\distro\include;..\proj-4.8.0\distro\include;..\SpatialRef3D\include;..\common</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
