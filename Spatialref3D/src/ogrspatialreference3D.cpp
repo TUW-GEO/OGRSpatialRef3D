@@ -2,7 +2,7 @@
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Classes for manipulating spatial reference systems with 
- *           vetical datum suppurt in a platform non-specific manner.
+ *           vetical datum support in a platform non-specific manner.
  * Authors:  Gottfried Mandlburger, Johannes Otepka, Bhargav patel, Peb Ruswono Aryan
  *
  ******************************************************************************

@@ -2,8 +2,8 @@
  *
  * Project:  OpenGIS Simple Features Reference Implementation
  * Purpose:  Classes for manipulating spatial reference systems with
- *           vertical datum suppurt in a platform non-specific manner.
- * Authors:  Gottfried Mandlburger, Johannes Otepka, Bhargav patel
+ *           vertical datum support in a platform non-specific manner.
+ * Authors:  Gottfried Mandlburger, Johannes Otepka, Bhargav patel, Peb Ruswono Aryan
  *
  ******************************************************************************
  * Copyright (c) 2012-2014,  I.P.F., TU Vienna.

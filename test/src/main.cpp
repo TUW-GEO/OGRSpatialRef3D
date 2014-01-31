@@ -1,9 +1,8 @@
 /******************************************************************************
  *
- * Project:  OpenGIS Simple Features Reference Implementation
- * Purpose:  Classes for manipulating spatial reference systems with
- *           vertical datum suppurt in a platform non-specific manner.
- * Authors:  Gottfried Mandlburger, Johannes Otepka, Bhargav patel
+ * Project:  Spatialref3D coordinate transformation test
+ * Purpose:  program for testing coordinate transformation function
+ * Authors:  Peb Ruswono Aryan, Gottfried Mandlburger, Johannes Otepka
  *
  ******************************************************************************
  * Copyright (c) 2012-2014,  I.P.F., TU Vienna.
