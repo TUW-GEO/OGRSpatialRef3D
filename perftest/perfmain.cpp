@@ -39,15 +39,53 @@
 #include "ogr_spatialref3D.h"
 #include "OptionParser.h"
 
-double *x_in, *y_in, *z_in;
-double *x_out, *y_out, *z_out;
+
+/************************************************************************/
+/*                         OGRSpatialReference3D                        */
+/************************************************************************/
+
+/**\file perfmain.cpp
+ * This file is an program to test the speed of implemented code 
+ * using reference data supplied in CSV. 
+ * 
+ * The command-line options for running this program are:
+ *	
+ *		-i | --input-file=FILE	: set FILE as input reference coordinate data
+ *	
+ *		-n | --num-input=N		: number of input data N taken from sample file
+ *								  (value of -1 means all data in file will be used)
+ *								DEFAULT = -1
+ *	
+ *  
+ *
+ *
+ ************************************************************************/
+
+//! temporary variable for storing coordinate data read from file
+double *x_in;
+//! temporary variable for storing coordinate data read from file
+double *y_in;
+//! temporary variable for storing coordinate data read from file
+double *z_in;
+
+//! temporary variable for storing coordinate data used in transformation
+double *x_out;
+//! temporary variable for storing coordinate data used in transformation
+double *y_out;
+//! temporary variable for storing coordinate data used in transformation
+double *z_out;
 
 //#define TEST_FILE "Line13.xyz"
+//! maximum number of rows from data file
 #define MAX_DATA 16000000	//12877662
 
+//! macro to retrieve timer value in seconds (double)
 #define GET_TIMER(x) x = (double)(clock())/CLOCKS_PER_SEC; //in [s]
+
+//! macro to get time difference
 #define DIFF_TIME(a,b) (a-b)
 
+//! temporary storage for data read from file
 char buffer[1024];
 
 /*
@@ -78,6 +116,7 @@ char *loadWktFile(const char* sWktFilename){
 	return buffer;
 }
 
+//! program's entry point
 int main(int argc, char *argv[])
 {
 	optparse::OptionParser parser = optparse::OptionParser().description("OGRSpatialRef3D performance testing program");

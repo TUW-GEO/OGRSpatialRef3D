@@ -6,7 +6,7 @@
  * Authors:  Gottfried Mandlburger, Johannes Otepka, Bhargav patel
  *
  ******************************************************************************
- * Copyright (c) 2012-2013,  I.P.F., TU Vienna.
+ * Copyright (c) 2012-2014,  I.P.F., TU Vienna.
   *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),

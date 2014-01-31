@@ -1,3 +1,31 @@
+/******************************************************************************
+ *
+ * Project:  OpenGIS Simple Features Reference Implementation
+ * Purpose:  Classes for manipulating spatial reference systems with
+ *           vertical datum suppurt in a platform non-specific manner.
+ * Authors:  Gottfried Mandlburger, Johannes Otepka, Bhargav patel
+ *
+ ******************************************************************************
+ * Copyright (c) 2012-2014,  I.P.F., TU Vienna.
+  *
+ * Permission is hereby granted, free of charge, to any person obtaining a
+ * copy of this software and associated documentation files (the "Software"),
+ * to deal in the Software without restriction, including without limitation
+ * the rights to use, copy, modify, merge, publish, distribute, sublicense,
+ * and/or sell copies of the Software, and to permit persons to whom the
+ * Software is furnished to do so, subject to the following conditions:
+ *
+ * The above copyright notice and this permission notice shall be included
+ * in all copies or substantial portions of the Software.
+ *
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+ * OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+ * THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+ * FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+ * DEALINGS IN THE SOFTWARE.
+ ****************************************************************************/
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -7,10 +35,44 @@
 #include "ogr_spatialref3D.h"
 #include "OptionParser.h"
 
+/************************************************************************/
+/*                         OGRSpatialReference3D                        */
+/************************************************************************/
+
+/**\file main.cpp
+ * This file is an example commandline program that utilize 
+ * OGRSpatialReference3D class to transform point(s) from one Spatial 
+ * Reference system to another.
+ * 
+ * The command-line options for running this program are:
+ *  
+ *	
+ *		-d | --dest-coord=WKT_FILE		: set WKT_FILE as target coordinate system
+ *										  description
+ *	
+ *		-g | --gdal-data=TEXT			: set path to global data used by GDAL
+ *										DEFAULT = ..\\gdal-1.10.0\\data
+ *	
+ *		-i | --input-coord=FILE			: set FILE as input coordinate data
+ *	
+ *		-s | --source-coord=FILE		: set FILE as source coordinate system
+ *										  description
+ *	
+ *  
+ *
+ *
+ ************************************************************************/
+
 using namespace std;
 
+//! global variable to hold temporary string read from file
 char buffer[1024];
 
+//! function to load WKT file into a string
+/*!
+    \param sWktFilename a pointer to string containing WKT filename.
+    \return pointer to char array if successful or halt the program
+*/
 char *loadWktFile(const char* sWktFilename){
 	ifstream inFile;
 
@@ -29,6 +91,7 @@ char *loadWktFile(const char* sWktFilename){
 	return buffer;
 }
 
+//! program's entry point
 int main(int argc, char* argv[])
 {
   //init gdal/proj.4 data directory path 
@@ -58,7 +121,7 @@ int main(int argc, char* argv[])
 		char *wkt1 = loadWktFile(options["src_coord"].c_str());
 		oSourceSRS.importFromWkt3D(&(wkt1));
 		oSourceSRS.exportToProj4(&(wkt1));
-		cout << wkt1 << endl;
+		cout << "SOURCE SRS: " << wkt1 << endl;
 	}
 	else{
 		int slen = options["src_wkt"].length() + 1;
@@ -72,7 +135,7 @@ int main(int argc, char* argv[])
 		char *wkt2 = loadWktFile(options["dst_coord"].c_str());
 		oTargetSRS.importFromWkt3D(&(wkt2));
 		oTargetSRS.exportToProj4(&(wkt2));
-		cout << wkt2 << endl;
+		cout << "TARGET SRS: "<< wkt2 << endl;
 	}
 	else{
 		int slen = options["dst_wkt"].length() + 1;
