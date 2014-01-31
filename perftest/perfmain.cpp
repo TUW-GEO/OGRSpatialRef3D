@@ -6,7 +6,7 @@
  * Authors:  Peb Ruswono Aryan, Gottfried Mandlburger, Johannes Otepka
  *
  ******************************************************************************
- * Copyright (c) 2012,  I.P.F., TU Vienna.
+ * Copyright (c) 2012-2014,  I.P.F., TU Vienna.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -50,11 +50,27 @@
  * 
  * The command-line options for running this program are:
  *	
- *		-i | --input-file=FILE	: set FILE as input reference coordinate data
  *	
- *		-n | --num-input=N		: number of input data N taken from sample file
- *								  (value of -1 means all data in file will be used)
- *								DEFAULT = -1
+ *		-c | --chunk-size=CHUNK			: number of point taken for each measurement
+ *										DEFAULT = 10
+ *	
+ *		-d | --dest-coord=WKT_FILE		: set WKT_FILE as target coordinate system
+ *										  description
+ *	
+ *		-i | --input-file=FILE			: set FILE as input reference coordinate data
+ *	
+ *		-m | --max-input=N				: limit N maximum number of input data taken from sample file
+ *										DEFAULT = MAX_DATA (16M points)
+ *	
+ *		-n | --num-input=N				: number of input data N taken from sample file
+ *										  (value of -1 means all data in file will be used)
+ *										DEFAULT = -1
+ *	
+ *		-r | --repeat=N					: number of repetition for each transformation to be done
+ *										DEFAULT = 3 (MINIMUM = 2)
+ *	
+ *		-s | --source-coord=FILE		: set FILE as source coordinate system
+ *										  description
  *	
  *  
  *
