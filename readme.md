@@ -53,4 +53,4 @@ Adding height model to the extended Spatial Reference System can be done in two 
 How to build Documentation
 ====================
 * Download and install [Doxygen](http://www.doxygen.org)
-* from the command line in the project directory (`OGRSpatialRef3D`) run `doxygen doc\Doxyfile`
+* from the command line in the documentation directory (`OGRSpatialRef3D/doc`) run `doxygen Doxyfile`
