@@ -33,6 +33,7 @@
 #include "cpl_conv.h"
 #include "ogr_spatialref3D.h"
 #include "OptionParser.h"
+#include "proj_api.h"
 
 /************************************************************************/
 /*                         OGRSpatialReference3D                        */
@@ -144,7 +145,10 @@ int main(int argc, char* argv[])
 		delete [] cstr;
 	}
 
-	CPLSetConfigOption("GDAL_DATA", options["gdal_data"].c_str());
+	std::string path = options["gdal_data"];
+	CPLSetConfigOption("GDAL_DATA", path.c_str());
+	const char *paths[1] = {path.c_str()};
+	pj_set_searchpath(1,paths);	//set proj.4 search path to find grid shift files in the corresponding GDAL_DATA directory
 	if(options["input_file"].length() == 0){
 		cerr << "no data FILE given" << endl;
 		exit(1);
