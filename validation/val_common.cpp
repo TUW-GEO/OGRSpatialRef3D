@@ -30,6 +30,7 @@
 #include <fstream>
 #include <string>
 #include <sstream>
+#include <algorithm>
 
 #include "validate.h"
 #include "cpl_conv.h"
@@ -45,8 +46,17 @@ double *ras_val, *h_grid;
 int *ms; // meridian strip
 int num_data;
 
+double *x_src, *y_src, *z_src;
+double *x_tgt, *y_tgt, *z_tgt;
+double *und_src, *vcorr_src;
+double *und_tgt, *vcorr_tgt;
+
 double *hell_mgi;
 double *x_mgi, *y_mgi, *z_mgi;
+
+vector<string> src_cols, tgt_cols;
+map<string, int> columns;
+map<string, double*> data_pts;
 
 char buffer[1024];
 
@@ -121,6 +131,16 @@ void val_cleanup()
 	CPLFree(x_mgi);
 	CPLFree(y_mgi);
 	CPLFree(z_mgi);
+
+	for(map<string, double*>::iterator it = data_pts.begin(); it != data_pts.end(); ++it){
+		double *buffer = (*it).second;
+		CPLFree(buffer);
+	}
+
+	data_pts.clear();
+	src_cols.clear();
+	tgt_cols.clear();
+	columns.clear();
 }
 
 char *loadWktFile(const char* sWktFilename){
@@ -141,6 +161,18 @@ char *loadWktFile(const char* sWktFilename){
 	return buffer;
 }
 
+void split(string source, string delimiter, vector<string> &tokens)
+{
+	size_t pos = 0;
+	std::string token;
+	while ((pos = source.find(delimiter)) != std::string::npos) {
+		token = source.substr(0, pos);
+		tokens.push_back(token);
+		source.erase(0, pos + delimiter.length());
+	}
+	tokens.push_back(source);
+}
+
 void loadRefFile(string filename, int max_input)
 {
 	bool first_row = false;
@@ -154,13 +186,44 @@ void loadRefFile(string filename, int max_input)
 		cout << "reading file " << filename << endl;
 	}
 	num_data = 0;
+
+	vector<string> row;
 	
 	string line="";
+	string delimiter=";";
 	while(!inFile.eof()){
 		getline(inFile, line);
+		split(line, delimiter, row);
 		if (!first_row){
 			first_row = true;
+			for(vector<string>::iterator it = src_cols.begin(); it != src_cols.end(); ++it){
+				string col = *it;
+				vector<string>::iterator position = find(row.begin(), row.end(), col);
+				if(position != row.end()){
+					columns[col] = distance(row.begin(), position);
+					cout << col << " " << columns[col] << endl;
+					data_pts[col] = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
+				}
+				else cout << col << " NOT FOUND" << endl;
+			}
+			for(vector<string>::iterator it = tgt_cols.begin(); it != tgt_cols.end(); ++it){
+				string col = *it;
+				vector<string>::iterator position = find(row.begin(), row.end(), col);
+				if(position != row.end()){
+					columns[col] = distance(row.begin(), position);
+					cout << col << " " << columns[col] << endl;
+					data_pts[col] = (double*)CPLMalloc(sizeof(double)*MAX_DATA);
+				}
+				else cout << col << " NOT FOUND" << endl;
+			}
 			continue;// ignore first row
+		}
+
+		//read selected columns only to the associated variables (x,y,z,und,vcorr)
+		for(vector<string>::iterator it = src_cols.begin(); it != src_cols.end(); ++it){
+			if(data_pts.find(*it) != data_pts.end()){
+				data_pts[*it][num_data] = atof(row[columns[*it]].c_str());
+			}
 		}
 
 		stringstream ss(line);
@@ -209,6 +272,9 @@ void loadRefFile(string filename, int max_input)
 			break;
 	}
 	inFile.close();
+
+	//prepare for deprecation 10.03.2014
+	return;
 
 	filename = "mgi_LonLatEllH.xyz";
 	inFile.open(filename, ios::in);

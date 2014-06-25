@@ -28,6 +28,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <sstream>
+#include <iterator>
 
 #include "cpl_conv.h"
 #include "ogr_spatialref3D.h"
@@ -66,6 +68,8 @@ int main(int argc, char *argv[])
 	
 	parser.add_option("-i", "--input-file").dest("input_file").help("set input reference coordinate data FILE").metavar("FILE");
 	parser.add_option("-n", "--num-input").dest("num_input").help("number of input data N taken from sample file (-1 means all data in file)").metavar("N").set_default(-1);
+	parser.add_option("-s", "--source-col").dest("source_col").help("set column names COLS which contains source coordinate data (comma separated names without spaces)").metavar("COLS");
+	parser.add_option("-t", "--target-col").dest("target_col").help("set column names COLS which contains target coordinate data (comma separated names without spaces)").metavar("COLS");
 	
 	optparse::Values options = parser.parse_args(argc, argv);
 	vector<string> args = parser.args();
@@ -74,12 +78,33 @@ int main(int argc, char *argv[])
 			cerr << "Input Reference Coordinate is not set." << endl;
 			exit(1);
 	}
+	else if ((options["source_col"].length() == 0)){
+		cerr << "source column names is not set" << endl;
+		exit(1);
+	}
+	else if ((options["target_col"].length() == 0)){
+		cerr << "target column names is not set" << endl;
+		exit(1);
+	}
+
+	string delimiter = ","; 
+	split(options["source_col"], delimiter, src_cols);
+	split(options["target_col"], delimiter, tgt_cols);
+
+	for(vector<string>::iterator it = src_cols.begin(); it != src_cols.end(); ++it){
+		cout << *it << endl;
+	}
+	for(vector<string>::iterator it = tgt_cols.begin(); it != tgt_cols.end(); ++it){
+		cout << *it << endl;
+	}
+	
 	
 	val_init();
 
 	loadRefFile(options["input_file"], atoi(options["num_input"].c_str()));
 
 	cout << fixed; cout << "# data point(s) : " << num_data << endl;
+	return 0;
 
 	val_geoc_etrs();
 	val_geog_etrs();

@@ -29,6 +29,8 @@
 #define __VALIDATE_H__
 
 #include <string>
+#include <vector>
+#include <map>
 #include "cpl_conv.h"
 
 #define MAX_DATA 2500
@@ -46,6 +48,7 @@
 #define PROJ_MGI_31 "mgi_proj_31.prj" //orthometric height with offset
 #define PROJ_MGI_34 "mgi_proj_34.prj" //orthometric height with offset
 
+using namespace std;
 /*
  *
  */
@@ -60,8 +63,15 @@ extern double *ras_val, *h_grid;
 extern int *ms; // meridian strip
 extern int num_data;
 
+extern double *x_src, *y_src, *z_src;
+extern double *x_tgt, *y_tgt, *z_tgt;
+extern double *und_src, *vcorr_src;
+extern double *und_tgt, *vcorr_tgt;
+
 //computed values
 extern double *hell_mgi, *x_mgi, *y_mgi, *z_mgi;
+extern vector<string> src_cols, tgt_cols;
+extern map<string, int> columns;
 
 class SummStat
 {
@@ -81,6 +91,8 @@ void val_cleanup();
 
 char *loadWktFile(const char* sWktFilename);
 void loadRefFile(std::string, int);
+
+void split(string source, string delimiter, vector<string> &tokens);
 
 /*
  * combinations : 
