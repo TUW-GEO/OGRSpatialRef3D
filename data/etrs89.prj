@@ -1,0 +1,11 @@
+GEOGCS["ETRS89",
+  DATUM["European_Terrestrial_Reference_System_1989",
+    SPHEROID["GRS 1980",6378137.,298.257222096133,
+      AUTHORITY["EPSG","7019"]],
+    TOWGS84[0.,0.,0.,0.,0.,0.,0.],
+    AUTHORITY["","96003"]],
+  PRIMEM["Greenwich",0.,
+    AUTHORITY["EPSG","8901"]],
+  UNIT["degree",0.0174532925199434,
+    AUTHORITY["EPSG","9102"]],
+  AUTHORITY["EPSG","4258"]]

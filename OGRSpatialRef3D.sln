@@ -22,6 +22,8 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "perftest", "perftest\perfte
 		{08AE2AB0-958E-4612-AA24-4B192DFF82E2} = {08AE2AB0-958E-4612-AA24-4B192DFF82E2}
 	EndProjectSection
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "makegrid", "makegrid\makegrid.vcxproj", "{FD69029F-BECC-4558-B375-15378848E94D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -52,6 +54,10 @@ Global
 		{68AAE03B-5448-4727-8EEC-1D78EF85DC39}.Debug|Win32.Build.0 = Debug|Win32
 		{68AAE03B-5448-4727-8EEC-1D78EF85DC39}.Release|Win32.ActiveCfg = Release|Win32
 		{68AAE03B-5448-4727-8EEC-1D78EF85DC39}.Release|Win32.Build.0 = Release|Win32
+		{FD69029F-BECC-4558-B375-15378848E94D}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FD69029F-BECC-4558-B375-15378848E94D}.Debug|Win32.Build.0 = Debug|Win32
+		{FD69029F-BECC-4558-B375-15378848E94D}.Release|Win32.ActiveCfg = Release|Win32
+		{FD69029F-BECC-4558-B375-15378848E94D}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
